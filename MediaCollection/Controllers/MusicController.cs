@@ -38,6 +38,8 @@ namespace MediaCollection.Controllers
             }));
         }
 
+        #region Create
+
         public IActionResult Create()
         {
             return View(new MusicCreateViewModel());
@@ -93,5 +95,50 @@ namespace MediaCollection.Controllers
 
             return RedirectToAction("Index");
         }
+
+        #endregion
+
+        #region Detail
+
+        public async Task<IActionResult> Detail(int id)
+        {
+            var song = await _applicationDbContext.Songs
+                .Include(song => song.Album)
+                .ThenInclude(album => album.Band)
+                .FirstOrDefaultAsync(item => item.Id == id);
+
+            var vm = new MusicDetailViewModel
+            {
+                SongTitle = song.Title,
+                AlbumTitle = song.Album.Title,
+                BandName = song.Album.Band.Name,
+                Duration = song.Duration,
+                ReleaseDate = song.Album.ReleaseDate
+            };
+
+            return View(vm);
+        }
+
+        #endregion
+
+        #region Edit
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var song = await _applicationDbContext.Songs
+                .Include(song => song.Album)
+                .ThenInclude(album => album.Band)
+                .FirstOrDefaultAsync(item => item.Id == id);
+
+            return View(new MusicEditViewModel { 
+                SongTitle = song.Title,
+                AlbumTitle = song.Album.Title,
+                BandName = song.Album.Band.Name,
+                Duration = song.Duration,
+                ReleaseDate = song.Album.ReleaseDate
+            });
+        }
+
+        #endregion
     }
 }

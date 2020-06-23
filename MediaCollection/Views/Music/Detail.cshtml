@@ -1,0 +1,16 @@
+﻿@model MusicDetailViewModel
+
+<strong>Title</strong>
+<p><em>@Model.SongTitle</em></p>
+
+<strong>Album</strong>
+<p><em>@Model.AlbumTitle</em></p>
+
+<strong>Band</strong>
+<p><em>@Model.BandName</em></p>
+
+<strong>Duration</strong>
+<p><em>@Model.Duration.ToString()</em></p>
+
+<strong>Release Date</strong>
+<p><em>@(Model.ReleaseDate?.ToShortDateString() ?? "No release date available.")</em></p>
