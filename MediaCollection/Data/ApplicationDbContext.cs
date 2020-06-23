@@ -14,8 +14,8 @@ namespace MediaCollection.Data
         {
         }
 
-        DbSet<Band> Bands { get; set; }
-        DbSet<Album> Albums { get; set; }
-        DbSet<Song> Songs { get; set; }
+        public DbSet<Band> Bands { get; set; }
+        public DbSet<Album> Albums { get; set; }
+        public DbSet<Song> Songs { get; set; }
     }
 }
