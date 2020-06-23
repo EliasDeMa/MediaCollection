@@ -1,0 +1,9 @@
+﻿@model MusicDeleteViewModel
+
+<h2><em>Confirm Deletion</em></h2>
+<p><em>Are you sure you want to delete @Model.SongTitle by @Model.BandName</em></p>
+
+<a asp-controller="Music" 
+   asp-action="ConfirmDelete"
+   asp-route-id="@Model.Id"
+   class="btn btn-primary">Confirm</a>
