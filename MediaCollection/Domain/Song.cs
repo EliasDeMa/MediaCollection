@@ -9,7 +9,7 @@ namespace MediaCollection.Domain
         public string NormalizedTitle { get; set; }
         public TimeSpan Duration { get; set; }
 
-        public int AlbumId { get; set; }
+        public int? AlbumId { get; set; }
         public Album Album { get; set; }
     }
 }
