@@ -1,0 +1,35 @@
+﻿@model IEnumerable<MusicIndexViewModel>
+
+<h2>Music</h2>
+@if (Model == null || !Model.Any())
+{
+    <p><em>No music available.</em></p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Album</th>
+                <th>Band</th>
+                <th>Duration</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <th>@item.SongTitle</th>
+                <th>@item.AlbumTitle</th>
+                <th>@item.BandName</th>
+                <th>@item.Duration</th>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<a asp-controller="Music" 
+   asp-action="Create"
+   class="btn btn-primary">Add Song</a>
