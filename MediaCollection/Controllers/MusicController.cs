@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediaCollection.Data;
+using MediaCollection.Domain;
 using MediaCollection.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediaCollection.Controllers
@@ -30,13 +32,65 @@ namespace MediaCollection.Controllers
                 Id = song.Id,
                 SongTitle = song.Title,
                 BandName = song.Album.Band.Name,
-                AlbumTitle = song.Album.Title
+                AlbumTitle = song.Album.Title,
+                Duration = song.Duration
             }));
         }
 
         public IActionResult Create()
         {
             return View(new MusicCreateViewModel());
+        }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> Create(MusicCreateViewModel vm)
+        {
+            var bandExists = _applicationDbContext.Bands.Where(band => band.NormalizedName == vm.BandName.ToUpper());
+            var albumExists = _applicationDbContext.Albums.Where(album => album.NormalizedTitle == vm.AlbumTitle.ToUpper());
+
+            var songToDb = new Song
+            {
+                Title = vm.SongTitle,
+                NormalizedTitle = vm.SongTitle.ToUpper(),
+                Duration = vm.Duration
+            };
+
+            if (albumExists.Any())
+            {
+                songToDb.Album = await albumExists.FirstOrDefaultAsync();
+            }
+            else
+            {
+                songToDb.Album = new Album
+                {
+                    Title = vm.AlbumTitle,
+                    NormalizedTitle = vm.AlbumTitle.ToUpper()
+                };
+            }
+
+            if (songToDb.Album.ReleaseDate == null && vm.ReleaseDate.HasValue)
+            {
+                songToDb.Album.ReleaseDate = vm.ReleaseDate.Value;
+            }
+
+            if (bandExists.Any() && songToDb.Album.BandId == null)
+            {
+                songToDb.Album.Band = await bandExists.FirstOrDefaultAsync();
+            }
+            else if (!bandExists.Any())
+            {
+                songToDb.Album.Band = new Band
+                {
+                    Name = vm.BandName,
+                    NormalizedName = vm.BandName.ToUpper()
+                };
+            }
+
+            await _applicationDbContext.Songs.AddAsync(songToDb);
+            await _applicationDbContext.SaveChangesAsync();
+
+            return RedirectToAction("Index");
         }
     }
 }
