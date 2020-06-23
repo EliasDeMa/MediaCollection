@@ -14,7 +14,7 @@ else
                 <th>Album</th>
                 <th>Band</th>
                 <th>Release Date</th>
-                <th>Duration</th>
+                <th colspan="2">Duration</th>
             </tr>
         </thead>
         <tbody>
@@ -26,6 +26,18 @@ else
                 <td>@item.BandName</td>
                 <td>@(item.ReleaseDate?.ToShortDateString() ?? "No release date added")</td>
                 <td>@item.Duration</td>
+                <td>
+                    <a asp-controller="Music"
+                       asp-action="Detail"
+                       asp-route-id="@item.Id"
+                       class="btn btn-secondary">Detail</a>
+                    @if (User.IsInRole("Admin"))
+                    { 
+                    <a asp-controller="Music"
+                       asp-action="Hide"
+                       class="btn btn-secondary">Hide</a>
+                    }
+                </td>
             </tr>
             }
         </tbody>
