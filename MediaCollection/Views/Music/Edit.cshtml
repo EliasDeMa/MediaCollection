@@ -1,0 +1,53 @@
+﻿@model MusicEditViewModel
+
+    <form asp-action="Edit"
+          asp-controller="Music"
+          method="post">
+        <div class="form-group">
+            <label asp-for="SongTitle"></label>
+            <input asp-for="SongTitle" class="form-control" />
+            <span class="text-danger" asp-validation-for="SongTitle"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="BandName"></label>
+            <input asp-for="BandName" class="form-control" />
+            <span class="text-danger" asp-validation-for="BandName"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="AlbumTitle"></label>
+            <input asp-for="AlbumTitle" class="form-control" onchange="activateReleaseDate()" />
+            <span class="text-danger" asp-validation-for="AlbumTitle"></span>
+        </div>
+
+        @if (Model.ReleaseDate.HasValue)
+        {
+            <div class="form-group">
+                <label asp-for="ReleaseDate"></label>
+                <input asp-for="ReleaseDate" type="date" disabled />
+                <span class="text-danger" asp-validation-for="ReleaseDate"></span>
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                <label asp-for="ReleaseDate"></label>
+                <input asp-for="ReleaseDate" type="date" />
+                <span class="text-danger" asp-validation-for="ReleaseDate"></span>
+            </div>
+        }
+
+        <div class="form-group">
+            <label asp-for="Duration"></label>
+            <input asp-for="Duration" type="time" step="1" />
+            <span class="text-danger" asp-validation-for="Duration"></span>
+        </div>
+        <button class="btn btn-primary" type="submit">Enter</button>
+    </form>
+
+<script>
+    function activateReleaseDate() {
+        document.getElementById("ReleaseDate").disabled = false;
+    }
+</script>
