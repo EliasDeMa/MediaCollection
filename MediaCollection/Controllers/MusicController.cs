@@ -33,7 +33,8 @@ namespace MediaCollection.Controllers
                 SongTitle = song.Title,
                 BandName = song.Album.Band.Name,
                 AlbumTitle = song.Album.Title,
-                Duration = song.Duration
+                Duration = song.Duration,
+                ReleaseDate = song.Album.ReleaseDate
             }));
         }
 

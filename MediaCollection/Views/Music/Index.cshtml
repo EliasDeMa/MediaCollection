@@ -7,12 +7,13 @@
 }
 else
 {
-    <table>
+    <table cellpadding="5">
         <thead>
             <tr>
                 <th>Title</th>
                 <th>Album</th>
                 <th>Band</th>
+                <th>Release Date</th>
                 <th>Duration</th>
             </tr>
         </thead>
@@ -20,10 +21,11 @@ else
             @foreach (var item in Model)
             {
             <tr>
-                <th>@item.SongTitle</th>
-                <th>@item.AlbumTitle</th>
-                <th>@item.BandName</th>
-                <th>@item.Duration</th>
+                <td>@item.SongTitle</td>
+                <td>@item.AlbumTitle</td>
+                <td>@item.BandName</td>
+                <td>@(item.ReleaseDate?.ToShortDateString() ?? "No release date added")</td>
+                <td>@item.Duration</td>
             </tr>
             }
         </tbody>

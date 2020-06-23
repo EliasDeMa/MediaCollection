@@ -12,5 +12,6 @@ namespace MediaCollection.Models
         public string BandName { get; set; }
         public string AlbumTitle { get; set; }
         public TimeSpan Duration { get; set; }
+        public DateTime? ReleaseDate { get; set; }
     }
 }
