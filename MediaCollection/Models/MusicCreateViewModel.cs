@@ -12,6 +12,7 @@ namespace MediaCollection.Models
         public string SongTitle { get; set; }
         public string AlbumTitle { get; set; }
         public string BandName { get; set; }
+        public DateTime? ReleaseDate { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Duration cannot be zero")]
         public TimeSpan Duration { get; set; }
