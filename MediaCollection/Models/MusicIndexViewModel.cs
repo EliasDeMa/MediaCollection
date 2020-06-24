@@ -13,5 +13,6 @@ namespace MediaCollection.Models
         public string AlbumTitle { get; set; }
         public TimeSpan Duration { get; set; }
         public DateTime? ReleaseDate { get; set; }
+        public IEnumerable<PlayListIndividualViewModel> PlayLists { get; set; }
     }
 }
