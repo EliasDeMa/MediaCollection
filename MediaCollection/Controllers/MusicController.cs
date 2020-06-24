@@ -85,13 +85,7 @@ namespace MediaCollection.Controllers
                 .ThenInclude(album => album.Band)
                 .ToListAsync();
 
-            var userPlaylists = (await _applicationDbContext.PlayLists
-                .Where(pl => pl.UserId == userId)
-                .ToListAsync())
-                .Select(item => new PlayListIndividualViewModel { 
-                    Id = item.Id,
-                    Name = item.Name
-                });
+            var userPlaylists = await GetUserPlayLists(userId);
 
             return View(songs.Select(song => new MusicIndexViewModel
             {
@@ -216,6 +210,51 @@ namespace MediaCollection.Controllers
             };
 
             return View(vm);
+        }
+
+        public async Task<IActionResult> PlaylistDetail(int id)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var playlist = await _applicationDbContext.PlayLists
+                .Include(pl => pl.PlayListSongs)
+                .ThenInclude(pls => pls.Song)
+                .ThenInclude(song => song.Album)
+                .ThenInclude(album => album.Band)
+                .FirstOrDefaultAsync(pl => pl.Id == id);
+
+            var userPlaylists = await GetUserPlayLists(userId);
+
+            var vm = new PlaylistDetailViewModel
+            {
+                Name = playlist.Name,
+                Songs = playlist.PlayListSongs
+                .Select(pls => pls.Song)
+                .Select(song => new MusicIndexViewModel
+                {
+                    Id = song.Id,
+                    SongTitle = song.Title,
+                    BandName = song.Album.Band.Name,
+                    AlbumTitle = song.Album.Title,
+                    Duration = song.Duration,
+                    ReleaseDate = song.Album.ReleaseDate,
+                    PlayLists = userPlaylists
+                }),
+            };
+
+            return View(vm);
+        }
+
+        private async Task<IEnumerable<PlayListIndividualViewModel>> GetUserPlayLists(string userId)
+        {
+            return (await _applicationDbContext.PlayLists
+                .Where(pl => pl.UserId == userId)
+                .ToListAsync())
+                .Select(item => new PlayListIndividualViewModel
+                {
+                    Id = item.Id,
+                    Name = item.Name
+                });
         }
 
         #endregion
