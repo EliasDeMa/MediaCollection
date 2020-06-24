@@ -14,8 +14,28 @@ namespace MediaCollection.Data
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<PlayListSong>()
+                .HasKey(et => new { et.PlayListId, et.SongId });
+
+            builder.Entity<PlayListSong>()
+                .HasOne(et => et.PlayList)
+                .WithMany(e => e.PlayListSongs)
+                .HasForeignKey(et => et.PlayListId);
+
+            builder.Entity<PlayListSong>()
+                .HasOne(et => et.Song)
+                .WithMany(e => e.PlayListSongs)
+                .HasForeignKey(et => et.SongId);
+        }
+
         public DbSet<Band> Bands { get; set; }
         public DbSet<Album> Albums { get; set; }
         public DbSet<Song> Songs { get; set; }
+        public DbSet<PlayList> PlayLists { get; set; }
+        public DbSet<PlayListSong> PlayListSongs { get; set; }
     }
 }
