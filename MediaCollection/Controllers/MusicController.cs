@@ -196,17 +196,25 @@ namespace MediaCollection.Controllers
         public async Task<IActionResult> Detail(int id)
         {
             var song = await _applicationDbContext.Songs
+                .Include(song => song.SongReviews)
+                .ThenInclude(review => review.User)
                 .Include(song => song.Album)
                 .ThenInclude(album => album.Band)
                 .FirstOrDefaultAsync(item => item.Id == id);
 
             var vm = new MusicDetailViewModel
             {
+                Id = song.Id,
                 SongTitle = song.Title,
                 AlbumTitle = song.Album.Title,
                 BandName = song.Album.Band.Name,
                 Duration = song.Duration,
-                ReleaseDate = song.Album.ReleaseDate
+                ReleaseDate = song.Album.ReleaseDate,
+                Reviews = song.SongReviews.Select(review => new SongReviewViewModel { 
+                    Description = review.Description,
+                    Score = review.Score,
+                    User = review.User.UserName
+                })
             };
 
             return View(vm);
