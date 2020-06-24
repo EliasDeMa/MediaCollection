@@ -13,5 +13,6 @@ namespace MediaCollection.Domain
         public int? AlbumId { get; set; }
         public Album Album { get; set; }
         public ICollection<PlayListSong> PlayListSongs { get; set; }
+        public ICollection<SongReview> SongReviews { get; set; }
     }
 }
