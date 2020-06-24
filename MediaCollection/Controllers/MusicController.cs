@@ -105,6 +105,28 @@ namespace MediaCollection.Controllers
             }));
         }
 
+        public async Task<IActionResult> AddSongToPlayList(int songId, int playlistId)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var playlist = await _applicationDbContext.PlayLists
+                .FirstOrDefaultAsync(pl => pl.Id == playlistId && pl.UserId == userId);
+
+            if (playlist.PlayListSongs == null)
+            {
+                playlist.PlayListSongs = new List<PlayListSong>();
+            }
+
+            playlist.PlayListSongs.Add(new PlayListSong
+            {
+                SongId = songId
+            });
+
+            await _applicationDbContext.SaveChangesAsync();
+
+            return RedirectToAction("SongIndex");
+        }
+
         #region Create
 
         public IActionResult Create()
