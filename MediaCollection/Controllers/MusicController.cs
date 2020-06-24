@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using MediaCollection.Data;
 using MediaCollection.Domain;
@@ -21,21 +22,86 @@ namespace MediaCollection.Controllers
             _applicationDbContext = applicationDbContext;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
+            return View();
+        }
+
+        public async Task<IActionResult> PlayListIndex()
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var userPlaylists = await _applicationDbContext.PlayLists
+                .Where(pl => pl.UserId == userId)
+                .ToListAsync();
+
+            return View(new PlaylistIndexViewModel
+            {
+                PlayLists = userPlaylists.Select(item => new PlayListIndividualViewModel
+                {
+                    Id = item.Id,
+                    Name = item.Name
+                })
+            });
+
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PlayListIndex(PlaylistIndexViewModel vm)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var playlist = new PlayList
+            {
+                UserId = userId,
+                Name = vm.NewPlayListName
+            };
+
+            _applicationDbContext.PlayLists.Add(playlist);
+            await _applicationDbContext.SaveChangesAsync();
+
+            var userPlaylists = await _applicationDbContext.PlayLists
+                .Where(pl => pl.UserId == userId)
+                .ToListAsync();
+
+            return View(new PlaylistIndexViewModel
+            {
+                PlayLists = userPlaylists.Select(item => new PlayListIndividualViewModel
+                {
+                    Id = item.Id,
+                    Name = item.Name
+                })
+            });
+        }
+
+        public async Task<IActionResult> SongIndex()
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var songs = await _applicationDbContext.Songs
                 .Include(song => song.Album)
                 .ThenInclude(album => album.Band)
                 .ToListAsync();
 
+            var userPlaylists = (await _applicationDbContext.PlayLists
+                .Where(pl => pl.UserId == userId)
+                .ToListAsync())
+                .Select(item => new PlayListIndividualViewModel { 
+                    Id = item.Id,
+                    Name = item.Name
+                });
 
-            return View(songs.Select(song => new MusicIndexViewModel { 
+            return View(songs.Select(song => new MusicIndexViewModel
+            {
                 Id = song.Id,
                 SongTitle = song.Title,
                 BandName = song.Album.Band.Name,
                 AlbumTitle = song.Album.Title,
                 Duration = song.Duration,
-                ReleaseDate = song.Album.ReleaseDate
+                ReleaseDate = song.Album.ReleaseDate,
+                PlayLists = userPlaylists
             }));
         }
 
@@ -141,7 +207,8 @@ namespace MediaCollection.Controllers
                 .ThenInclude(album => album.Band)
                 .FirstOrDefaultAsync(item => item.Id == id);
 
-            return View(new MusicEditViewModel { 
+            return View(new MusicEditViewModel
+            {
                 SongTitle = song.Title,
                 AlbumTitle = song.Album.Title,
                 BandName = song.Album.Band.Name,

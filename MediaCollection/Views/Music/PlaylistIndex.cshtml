@@ -1,0 +1,50 @@
+﻿@model PlaylistIndexViewModel
+
+<form asp-controller="Music"
+      asp-action="PlayListIndex"
+      method="post">
+    <div class="form-row">
+
+        <div class="col-1">
+            <label asp-for="@Model.NewPlayListName"></label>
+        </div>
+        <div class="col-8">
+            <input asp-for="@Model.NewPlayListName" type="text" class="form-control" />
+        </div>
+
+        <div class="col-2">
+            <button class="btn btn-secondary" type="submit">Add PlayList</button>
+        </div>
+    </div>
+</form>
+
+
+<h3><em>Playlists</em></h3>
+@if (Model.PlayLists == null || !Model.PlayLists.Any())
+{
+    <p><em>You haven't made any playlists</em></p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th colspan="2">Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.PlayLists)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>
+                        <a asp-controller="Music"
+                           asp-action="PlayListDetail"
+                           asp-route-id="@item.Id"
+                           class="btn btn-primary">View</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

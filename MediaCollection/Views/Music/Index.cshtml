@@ -1,61 +1,17 @@
-﻿@model IEnumerable<MusicIndexViewModel>
-@inject SignInManager<MediaCollection.Domain.MediaCollectionUser> signInManager
+﻿@inject SignInManager<MediaCollection.Domain.MediaCollectionUser> signInManager
 
-<h2>Music</h2>
-@if (Model == null || !Model.Any())
-{
-    <p><em>No music available.</em></p>
-}
-else
-{
-    <table cellpadding="5">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Album</th>
-                <th>Band</th>
-                <th>Release Date</th>
-                <th colspan="2">Duration</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-            <tr>
-                <td>@item.SongTitle</td>
-                <td>@item.AlbumTitle</td>
-                <td>@item.BandName</td>
-                <td>@(item.ReleaseDate?.ToShortDateString() ?? "No release date added")</td>
-                <td>@item.Duration</td>
-                <td>
-                    @if (signInManager.IsSignedIn(User))
-                    {
-                        <a asp-controller="Music"
-                           asp-action="Detail"
-                           asp-route-id="@item.Id"
-                           class="btn btn-secondary">Detail</a>
-                        <a asp-controller="Music"
-                           asp-action="Edit"
-                           asp-route-id="@item.Id"
-                           class="btn btn-secondary">Edit</a>
-                        <a asp-controller="Music"
-                           asp-action="Delete"
-                           asp-route-id="@item.Id"
-                           class="btn btn-secondary">Delete</a>
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <a asp-controller="Music"
-                               asp-action="Hide"
-                               class="btn btn-secondary">Hide</a>
-                        }
-                    }
-                </td>
-            </tr>
-            }
-        </tbody>
-    </table>
+@if (signInManager.IsSignedIn(User)) {
+
+<a asp-controller="Music"
+   asp-action="PlaylistIndex"
+   class="btn btn-primary">
+    Playlists
+</a>
+
 }
 
-<a asp-controller="Music" 
-   asp-action="Create"
-   class="btn btn-primary">Add Song</a>
+<a asp-controller="Music"
+   asp-action="SongIndex"
+   class="btn btn-primary">
+    Songs
+</a>
