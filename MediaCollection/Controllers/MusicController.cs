@@ -76,43 +76,6 @@ namespace MediaCollection.Controllers
             });
         }
 
-        public async Task<IActionResult> SongIndex()
-        {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var songs = await _applicationDbContext.Songs
-                .Include(song => song.Album)
-                .ThenInclude(album => album.Band)
-                .ToListAsync();
-
-            var userPlaylists = await GetUserPlayLists(userId);
-
-            List<MusicIndexViewModel> songModels = new List<MusicIndexViewModel>();
-
-            foreach (var song in songs)
-            {
-                var model = new MusicIndexViewModel();
-                model.Id = song.Id;
-                model.SongTitle = song.Title;
-                model.Duration = song.Duration;
-                model.PlayLists = userPlaylists;
-                if (song.Album != null)
-                {
-                    model.AlbumId = song.AlbumId;
-                    model.AlbumTitle = song.Album.Title;
-                    model.ReleaseDate = song.Album.ReleaseDate;
-                    if (song.Album.Band != null)
-                    {
-                        model.BandName = song.Album.Band.Name;
-                    }
-                }
-
-                songModels.Add(model);
-            }
-
-            return View(songModels);
-        }
-
         public async Task<IActionResult> AddSongToPlayList(int songId, int playlistId)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -138,7 +101,7 @@ namespace MediaCollection.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddReviewToSong(int id, MusicDetailViewModel vm)
+        public async Task<IActionResult> AddReviewToSong(int id, ReviewFormViewModel vm)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -149,8 +112,8 @@ namespace MediaCollection.Controllers
             {
                 var songReview = new SongReview
                 {
-                    Description = vm.ReviewForm.NewReview,
-                    Score = vm.ReviewForm.NewReviewScore,
+                    Description = vm.NewReview,
+                    Score = vm.NewReviewScore,
                     SongId = id,
                     UserId = userId
                 };
@@ -256,35 +219,6 @@ namespace MediaCollection.Controllers
         #endregion
 
         #region Detail
-
-        public async Task<IActionResult> SongDetail(int id, bool alreadyReviewed = false)
-        {
-            var song = await _applicationDbContext.Songs
-                .Include(song => song.SongReviews)
-                .ThenInclude(review => review.User)
-                .Include(song => song.Album)
-                .ThenInclude(album => album.Band)
-                .FirstOrDefaultAsync(item => item.Id == id);
-
-            var vm = new MusicDetailViewModel
-            {
-                Id = song.Id,
-                AlreadyReviewed = alreadyReviewed,
-                SongTitle = song.Title,
-                AlbumTitle = song.Album.Title,
-                BandName = song.Album.Band.Name,
-                Duration = song.Duration,
-                ReleaseDate = song.Album.ReleaseDate,
-                Reviews = song.SongReviews.Select(review => new SongReviewViewModel { 
-                    Description = review.Description,
-                    Score = review.Score,
-                    User = review.User.UserName
-                }),
-                ReviewForm = new ReviewFormViewModel()
-            };
-
-            return View(vm);
-        }
 
         public async Task<IActionResult> PlaylistDetail(int id)
         {
