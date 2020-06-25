@@ -1,0 +1,31 @@
+﻿@model AlbumDetailViewModel
+
+<strong>Title</strong>
+<p>@Model.Title</p>
+
+<strong>Band</strong>
+<p>@Model.Band</p>
+
+@if (Model.Songs == null || !Model.Songs.Any())
+{
+    <p><em>No songs available for this album</em></p>
+}
+else
+{
+    <table cellpadding="5" class="table-bordered">
+        <thead>
+            <tr>
+                <th>Song title</th>
+                <th>Duration</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var song in Model.Songs) { 
+            <tr>
+                <td>@song.Item1</td>
+                <td>@song.Item2</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
