@@ -8,6 +8,7 @@ namespace MediaCollection.Models
     public class ReviewFormViewModel
     {
         public int Id { get; set; }
+        public string ReviewType { get; set; }
         public string NewReview { get; set; }
         public int NewReviewScore { get; set; }
     }
