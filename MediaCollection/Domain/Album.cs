@@ -14,5 +14,6 @@ namespace MediaCollection.Domain
         public Band Band { get; set; }
         public DateTime? ReleaseDate { get; set; }
         public ICollection<Song> Songs { get; set; }
+        public ICollection<AlbumReview> AlbumReviews { get; set; }
     }
 }
