@@ -15,6 +15,7 @@ namespace MediaCollection.Models
         public TimeSpan Duration { get; set; }
         public DateTime? ReleaseDate { get; set; }
         public IEnumerable<SongReviewViewModel> Reviews { get; set; }
+        public bool AlreadyReviewed { get; set; }
         public string NewReview { get; set; }
         public int NewReviewScore { get; set; }
     }

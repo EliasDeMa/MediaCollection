@@ -121,6 +121,35 @@ namespace MediaCollection.Controllers
             return RedirectToAction("SongIndex");
         }
 
+        public async Task<IActionResult> AddReviewToSong(int id, MusicDetailViewModel vm)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var userReviews = _applicationDbContext.SongReviews
+                .Where(x => x.SongId == id && userId == x.UserId);
+
+            if (!userReviews.Any())
+            {
+                var songReview = new SongReview
+                {
+                    Description = vm.NewReview,
+                    Score = vm.NewReviewScore,
+                    SongId = id,
+                    UserId = userId
+                };
+
+                _applicationDbContext.SongReviews.Add(songReview);
+                await _applicationDbContext.SaveChangesAsync();
+
+                return RedirectToAction("SongDetail", new { Id = id });
+            }
+            else
+            {
+                return RedirectToAction("SongDetail", new { Id = id, AlreadyReviewed = true });
+            }
+            
+        }
+
         #region Create
 
         public IActionResult Create()
@@ -193,7 +222,7 @@ namespace MediaCollection.Controllers
 
         #region Detail
 
-        public async Task<IActionResult> Detail(int id)
+        public async Task<IActionResult> SongDetail(int id, bool alreadyReviewed = false)
         {
             var song = await _applicationDbContext.Songs
                 .Include(song => song.SongReviews)
@@ -205,6 +234,7 @@ namespace MediaCollection.Controllers
             var vm = new MusicDetailViewModel
             {
                 Id = song.Id,
+                AlreadyReviewed = alreadyReviewed,
                 SongTitle = song.Title,
                 AlbumTitle = song.Album.Title,
                 BandName = song.Album.Band.Name,
@@ -323,7 +353,7 @@ namespace MediaCollection.Controllers
 
             await _applicationDbContext.SaveChangesAsync();
 
-            return RedirectToAction("Detail", new { Id = id });
+            return RedirectToAction("SongDetail", new { Id = id });
         }
 
         #endregion
