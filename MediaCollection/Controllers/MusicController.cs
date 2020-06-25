@@ -87,16 +87,30 @@ namespace MediaCollection.Controllers
 
             var userPlaylists = await GetUserPlayLists(userId);
 
-            return View(songs.Select(song => new MusicIndexViewModel
+            List<MusicIndexViewModel> songModels = new List<MusicIndexViewModel>();
+
+            foreach (var song in songs)
             {
-                Id = song.Id,
-                SongTitle = song.Title,
-                BandName = song.Album.Band.Name,
-                AlbumTitle = song.Album.Title,
-                Duration = song.Duration,
-                ReleaseDate = song.Album.ReleaseDate,
-                PlayLists = userPlaylists
-            }));
+                var model = new MusicIndexViewModel();
+                model.Id = song.Id;
+                model.SongTitle = song.Title;
+                model.Duration = song.Duration;
+                model.PlayLists = userPlaylists;
+                if (song.Album != null)
+                {
+                    model.AlbumId = song.AlbumId;
+                    model.AlbumTitle = song.Album.Title;
+                    model.ReleaseDate = song.Album.ReleaseDate;
+                    if (song.Album.Band != null)
+                    {
+                        model.BandName = song.Album.Band.Name;
+                    }
+                }
+
+                songModels.Add(model);
+            }
+
+            return View(songModels);
         }
 
         public async Task<IActionResult> AddSongToPlayList(int songId, int playlistId)
@@ -121,6 +135,9 @@ namespace MediaCollection.Controllers
             return RedirectToAction("SongIndex");
         }
 
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddReviewToSong(int id, MusicDetailViewModel vm)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -132,8 +149,8 @@ namespace MediaCollection.Controllers
             {
                 var songReview = new SongReview
                 {
-                    Description = vm.NewReview,
-                    Score = vm.NewReviewScore,
+                    Description = vm.ReviewForm.NewReview,
+                    Score = vm.ReviewForm.NewReviewScore,
                     SongId = id,
                     UserId = userId
                 };
@@ -154,15 +171,25 @@ namespace MediaCollection.Controllers
 
         public IActionResult Create()
         {
-            return View(new MusicCreateViewModel());
+            return View(new SongCreateViewModel());
         }
 
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public async Task<IActionResult> Create(MusicCreateViewModel vm)
+        public async Task<IActionResult> Create(SongCreateViewModel vm)
         {
-            var bandExists = _applicationDbContext.Bands.Where(band => band.NormalizedName == vm.BandName.ToUpper());
-            var albumExists = _applicationDbContext.Albums.Where(album => album.NormalizedTitle == vm.AlbumTitle.ToUpper());
+            IQueryable<Band> bandExists = null;
+            IQueryable<Album> albumExists = null;
+
+            if (!string.IsNullOrEmpty(vm.AlbumTitle))
+            {
+                _applicationDbContext.Albums.Where(album => album.NormalizedTitle == vm.AlbumTitle.ToUpper());
+            }
+
+            if (!string.IsNullOrEmpty(vm.BandName))
+            {
+                _applicationDbContext.Bands.Where(band => band.NormalizedName == vm.BandName.ToUpper());
+            }
 
             var songToDb = new Song
             {
@@ -173,7 +200,7 @@ namespace MediaCollection.Controllers
 
             await ChangeAlbum(vm.AlbumTitle, albumExists, songToDb);
 
-            if (songToDb.Album.ReleaseDate == null && vm.ReleaseDate.HasValue)
+            if (songToDb.Album != null && songToDb.Album.ReleaseDate == null && vm.ReleaseDate.HasValue)
             {
                 songToDb.Album.ReleaseDate = vm.ReleaseDate.Value;
             }
@@ -183,12 +210,16 @@ namespace MediaCollection.Controllers
             await _applicationDbContext.Songs.AddAsync(songToDb);
             await _applicationDbContext.SaveChangesAsync();
 
-            return RedirectToAction("Index");
+            return RedirectToAction("SongIndex");
         }
 
         private static async Task ChangeBand(string bandName, IQueryable<Band> bandExists, Song songToDb)
         {
-            if (bandExists.Any() && songToDb.Album.BandId == null)
+            if (bandExists == null)
+            {
+                return;
+            }
+            else if (bandExists.Any() && songToDb.Album.BandId == null)
             {
                 songToDb.Album.Band = await bandExists.FirstOrDefaultAsync();
             }
@@ -204,7 +235,11 @@ namespace MediaCollection.Controllers
 
         private static async Task ChangeAlbum(string albumTitle, IQueryable<Album> albumExists, Song songToDb)
         {
-            if (albumExists.Any())
+            if (albumExists == null)
+            {
+                return;
+            }
+            else if (albumExists.Any())
             {
                 songToDb.Album = await albumExists.FirstOrDefaultAsync();
             }
@@ -244,7 +279,8 @@ namespace MediaCollection.Controllers
                     Description = review.Description,
                     Score = review.Score,
                     User = review.User.UserName
-                })
+                }),
+                ReviewForm = new ReviewFormViewModel()
             };
 
             return View(vm);
@@ -283,6 +319,22 @@ namespace MediaCollection.Controllers
             return View(vm);
         }
 
+        public async Task<IActionResult> AlbumDetail(int id)
+        {
+            var album = await _applicationDbContext.Albums
+                .Include(album => album.Band)
+                .Include(album => album.Songs)
+                .FirstOrDefaultAsync(album => album.Id == id);
+
+            return View(new AlbumDetailViewModel
+            {
+                Id = album.Id,
+                Band = album.Band.Name,
+                Title = album.Title,
+                Songs = album.Songs.Select(song => (song.Title, song.Duration))
+            }); 
+        }
+
         private async Task<IEnumerable<PlayListIndividualViewModel>> GetUserPlayLists(string userId)
         {
             return (await _applicationDbContext.PlayLists
@@ -306,7 +358,7 @@ namespace MediaCollection.Controllers
                 .ThenInclude(album => album.Band)
                 .FirstOrDefaultAsync(item => item.Id == id);
 
-            return View(new MusicEditViewModel
+            return View(new SongEditViewModel
             {
                 SongTitle = song.Title,
                 AlbumTitle = song.Album.Title,
@@ -318,7 +370,7 @@ namespace MediaCollection.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, MusicEditViewModel vm)
+        public async Task<IActionResult> Edit(int id, SongEditViewModel vm)
         {
             var bandExists = _applicationDbContext.Bands.Where(band => band.NormalizedName == vm.BandName.ToUpper());
             var albumExists = _applicationDbContext.Albums.Where(album => album.NormalizedTitle == vm.AlbumTitle.ToUpper());
@@ -368,7 +420,7 @@ namespace MediaCollection.Controllers
                 .ThenInclude(album => album.Band)
                 .FirstOrDefaultAsync(item => item.Id == id);
 
-            return View(new MusicDeleteViewModel
+            return View(new SongDeleteViewModel
             {
                 Id = id,
                 SongTitle = song.Title,
