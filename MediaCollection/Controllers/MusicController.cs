@@ -98,38 +98,6 @@ namespace MediaCollection.Controllers
             return RedirectToAction("SongIndex");
         }
 
-        [HttpPost]
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddReviewToSong(int id, ReviewFormViewModel vm)
-        {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var userReviews = _applicationDbContext.SongReviews
-                .Where(x => x.SongId == id && userId == x.UserId);
-
-            if (!userReviews.Any())
-            {
-                var songReview = new SongReview
-                {
-                    Description = vm.NewReview,
-                    Score = vm.NewReviewScore,
-                    SongId = id,
-                    UserId = userId
-                };
-
-                _applicationDbContext.SongReviews.Add(songReview);
-                await _applicationDbContext.SaveChangesAsync();
-
-                return RedirectToAction("SongDetail", new { Id = id });
-            }
-            else
-            {
-                return RedirectToAction("SongDetail", new { Id = id, AlreadyReviewed = true });
-            }
-            
-        }
-
         #region Create
 
         public IActionResult Create()
