@@ -65,7 +65,30 @@ namespace MediaCollection.Controllers
 
         public async Task<IActionResult> AddAlbumReview(ReviewFormViewModel vm)
         {
-            return View();
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var userReviews = _applicationDbContext.AlbumReviews
+                .Where(x => x.AlbumId == vm.Id && userId == x.UserId);
+
+            if (!userReviews.Any())
+            {
+                var albumReview = new AlbumReview
+                {
+                    Description = vm.NewReview,
+                    Score = vm.NewReviewScore,
+                    AlbumId = vm.Id,
+                    UserId = userId
+                };
+
+                _applicationDbContext.AlbumReviews.Add(albumReview);
+                await _applicationDbContext.SaveChangesAsync();
+
+                return RedirectToAction("Detail", "Album", new { Id = vm.Id });
+            }
+            else
+            {
+                return RedirectToAction("Detail", "Album", new { Id = vm.Id, AlreadyReviewed = true });
+            }
         }
     }
 }
