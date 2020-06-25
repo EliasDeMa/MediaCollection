@@ -38,5 +38,6 @@ namespace MediaCollection.Data
         public DbSet<PlayList> PlayLists { get; set; }
         public DbSet<PlayListSong> PlayListSongs { get; set; }
         public DbSet<SongReview> SongReviews { get; set; }
+        public DbSet<AlbumReview> AlbumReviews { get; set; }
     }
 }
