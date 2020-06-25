@@ -23,7 +23,7 @@
 
         <div class="form-group">
             <label asp-for="ReleaseDate"></label>
-            <input asp-for="ReleaseDate" type="date"/>
+            <input asp-for="ReleaseDate" type="date" />
             <span class="text-danger" asp-validation-for="ReleaseDate"></span>
         </div>
 
@@ -31,6 +31,12 @@
             <label asp-for="Duration"></label>
             <input asp-for="Duration" type="time" value="00:00" step="1" />
             <span class="text-danger" asp-validation-for="Duration"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Link"></label>
+            <input asp-for="Link" type="text"/>
+            <span class="text-danger" asp-validation-for="Link"></span>
         </div>
         <button class="btn btn-primary" type="submit">Enter</button>
     </form>
