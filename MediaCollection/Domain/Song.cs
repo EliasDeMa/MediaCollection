@@ -8,6 +8,7 @@ namespace MediaCollection.Domain
         public int Id { get; set; }
         public string Title { get; set; }
         public string NormalizedTitle { get; set; }
+        public string SongLink { get; set; }
         public TimeSpan Duration { get; set; }
 
         public int? AlbumId { get; set; }
