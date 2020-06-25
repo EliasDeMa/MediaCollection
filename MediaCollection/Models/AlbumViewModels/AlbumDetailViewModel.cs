@@ -11,5 +11,6 @@ namespace MediaCollection.Models
         public string Title { get; set; }
         public string Band { get; set; }
         public IEnumerable<(string, TimeSpan)> Songs { get; set; }
+        public ReviewFormViewModel ReviewForm { get; set; }
     }
 }

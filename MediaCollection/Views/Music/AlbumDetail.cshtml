@@ -1,4 +1,5 @@
 ﻿@model AlbumDetailViewModel
+@inject SignInManager<MediaCollection.Domain.MediaCollectionUser> signInManager
 
 <strong>Title</strong>
 <p>@Model.Title</p>
@@ -20,12 +21,26 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var song in Model.Songs) { 
-            <tr>
-                <td>@song.Item1</td>
-                <td>@song.Item2</td>
-            </tr>
+            @foreach (var song in Model.Songs)
+            {
+                <tr>
+                    <td>@song.Item1</td>
+                    <td>@song.Item2</td>
+                </tr>
             }
         </tbody>
     </table>
+}
+
+@if (signInManager.IsSignedIn(User))
+{
+    <form asp-controller="Music"
+          asp-action="AddReviewToAlbum"
+          asp-route-id="@Model.Id"
+          method="post">
+
+        <partial name="ReviewForm" for="ReviewForm" />
+
+        <button class="btn btn-primary" type="submit">Enter</button>
+    </form>
 }
