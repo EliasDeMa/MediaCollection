@@ -16,7 +16,6 @@ namespace MediaCollection.Models
         public DateTime? ReleaseDate { get; set; }
         public IEnumerable<SongReviewViewModel> Reviews { get; set; }
         public bool AlreadyReviewed { get; set; }
-        public string NewReview { get; set; }
-        public int NewReviewScore { get; set; }
+        public ReviewFormViewModel ReviewForm { get; set; }
     }
 }
