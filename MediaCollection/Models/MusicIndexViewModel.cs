@@ -8,6 +8,7 @@ namespace MediaCollection.Models
     public class MusicIndexViewModel
     {
         public int Id { get; set; }
+        public int? AlbumId { get; set; }
         public string SongTitle { get; set; }
         public string BandName { get; set; }
         public string AlbumTitle { get; set; }
