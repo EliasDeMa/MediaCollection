@@ -1,0 +1,56 @@
+﻿@model MusicDetailViewModel
+@inject SignInManager<MediaCollection.Domain.MediaCollectionUser> signInManager
+
+<strong>Title</strong>
+<p><em>@Model.SongTitle</em></p>
+
+<strong>Album</strong>
+<p><em>@Model.AlbumTitle</em></p>
+
+<strong>Band</strong>
+<p><em>@Model.BandName</em></p>
+
+<strong>Duration</strong>
+<p><em>@Model.Duration.ToString()</em></p>
+
+<strong>Release Date</strong>
+<p><em>@(Model.ReleaseDate?.ToShortDateString() ?? "No release date available.")</em></p>
+
+@if (signInManager.IsSignedIn(User))
+{
+<form asp-controller="Music"
+      asp-action="AddReviewToSong"
+      asp-route-id="@Model.Id"
+      method="post">
+
+    <partial name="ReviewForm" for="ReviewForm" />
+
+    <button class="btn btn-primary" type="submit">Enter</button>
+</form>
+}
+
+<strong>Reviews</strong>
+@if (Model.Reviews == null || !Model.Reviews.Any())
+{
+    <p><em>No reviews available.</em></p>
+}
+else
+{
+    @foreach (var review in Model.Reviews)
+    {
+        <div>
+            <strong>@review.User</strong><br />
+            <em>@review.Score</em>
+            <p>@review.Description</p>
+        </div>
+    }
+}
+
+@if (Model.AlreadyReviewed)
+{
+    <script>
+
+        alert("You already reviewed this item");
+        
+    </script>
+}
