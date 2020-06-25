@@ -30,8 +30,8 @@ else
                     <td>
                         @if (item.AlbumId.HasValue)
                         {
-                            <a asp-controller="Music"
-                               asp-action="AlbumDetail"
+                            <a asp-controller="Album"
+                               asp-action="Detail"
                                asp-route-id="@item.AlbumId">@item.AlbumTitle</a>
                         }
                         else
