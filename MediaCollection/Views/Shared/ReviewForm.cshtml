@@ -1,19 +1,24 @@
 ﻿@model ReviewFormViewModel
 
-    <form asp-controller="Music"
-          asp-action="AddReviewToSong"
-          asp-route-id="@Model.Id"
-          method="post">
-        <div class="form-group">
-            <label asp-for="NewReviewScore"></label>
-            <input asp-for="NewReviewScore" type="range" min="0" max="10" step="1">
-            <span class="text-danger" asp-validation-for="NewReviewScore"></span>
-        </div>
+<form asp-controller="Review"
+      asp-action="AddReview"
+      asp-route-id="@Model.Id"
+      method="post">
+    <div class="form-group">
+        <label asp-for="NewReviewScore"></label>
+        <input asp-for="NewReviewScore" type="range" min="0" max="10" step="1">
+        <span class="text-danger" asp-validation-for="NewReviewScore"></span>
+    </div>
 
-        <div class="form-group">
-            <label asp-for="NewReview"></label>
-            <textarea asp-for="NewReview" cols="50" rows="5"></textarea>
-            <span class="text-danger" asp-validation-for="NewReview"></span>
-        </div>
-        <button class="btn btn-primary" type="submit">Enter</button>
-    </form>
+    <div class="form-group">
+        <label asp-for="NewReview"></label>
+        <textarea asp-for="NewReview" cols="50" rows="5"></textarea>
+        <span class="text-danger" asp-validation-for="NewReview"></span>
+    </div>
+
+    <div class="form-group">
+        <input asp-for="ReviewType" type="hidden" />
+
+    </div>
+    <button class="btn btn-primary" type="submit">Enter</button>
+</form>

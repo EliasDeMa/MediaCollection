@@ -34,13 +34,5 @@ else
 
 @if (signInManager.IsSignedIn(User))
 {
-    <form asp-controller="Music"
-          asp-action="AddReviewToAlbum"
-          asp-route-id="@Model.Id"
-          method="post">
-
-        <partial name="ReviewForm" for="ReviewForm" />
-
-        <button class="btn btn-primary" type="submit">Enter</button>
-    </form>
+    <partial name="ReviewForm" model="@(new ReviewFormViewModel { Id = Model.Id, ReviewType = nameof(MediaCollection.Domain.Album) })" />
 }

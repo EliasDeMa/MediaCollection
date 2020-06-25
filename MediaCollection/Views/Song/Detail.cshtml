@@ -18,7 +18,7 @@
 
 @if (signInManager.IsSignedIn(User))
 {
-    <partial name="../Shared/ReviewForm" model="@(new ReviewFormViewModel { Id = Model.Id})"/>
+    <partial name="../Shared/ReviewForm" model="@(new ReviewFormViewModel { Id = Model.Id, ReviewType = nameof(MediaCollection.Domain.Song) })"/>
 }
 
 <strong>Reviews</strong>
