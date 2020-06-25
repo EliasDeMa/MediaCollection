@@ -11,6 +11,7 @@ namespace MediaCollection.Models
         public int Id { get; set; }
         public string SongTitle { get; set; }
         public string AlbumTitle { get; set; }
+        public string Link { get; set; }
         public string BandName { get; set; }
         public TimeSpan Duration { get; set; }
         public DateTime? ReleaseDate { get; set; }

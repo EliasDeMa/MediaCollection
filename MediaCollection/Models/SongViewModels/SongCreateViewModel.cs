@@ -16,5 +16,6 @@ namespace MediaCollection.Models
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Duration cannot be zero")]
         public TimeSpan Duration { get; set; }
+        public string Link { get; set; }
     }
 }
