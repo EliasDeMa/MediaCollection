@@ -163,37 +163,5 @@ namespace MediaCollection.Controllers
         }
 
         #endregion
-
-        #region Delete
-
-        [Authorize]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var song = await _applicationDbContext.Songs
-                .Include(song => song.Album)
-                .ThenInclude(album => album.Band)
-                .FirstOrDefaultAsync(item => item.Id == id);
-
-            return View(new SongDeleteViewModel
-            {
-                Id = id,
-                SongTitle = song.Title,
-                BandName = song.Album.Band.Name
-            });
-        }
-
-        [Authorize]
-        public async Task<IActionResult> ConfirmDelete(int id)
-        {
-            var song = await _applicationDbContext.Songs.FindAsync(id);
-
-            _applicationDbContext.Songs.Remove(song);
-
-            await _applicationDbContext.SaveChangesAsync();
-
-            return RedirectToAction("Index");
-        }
-
-        #endregion
     }
 }
