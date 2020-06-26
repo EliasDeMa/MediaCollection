@@ -38,11 +38,14 @@ namespace MediaCollection.Controllers
 
             foreach (var song in songs)
             {
-                var model = new MusicIndexViewModel();
-                model.Id = song.Id;
-                model.SongTitle = song.Title;
-                model.Duration = song.Duration;
-                model.PlayLists = userPlaylists;
+                var model = new MusicIndexViewModel
+                {
+                    Id = song.Id,
+                    SongTitle = song.Title,
+                    Duration = song.Duration,
+                    PlayLists = userPlaylists
+                };
+
                 if (song.Album != null)
                 {
                     model.AlbumId = song.AlbumId;

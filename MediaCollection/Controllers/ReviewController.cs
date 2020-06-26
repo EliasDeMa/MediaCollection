@@ -55,11 +55,11 @@ namespace MediaCollection.Controllers
                 _applicationDbContext.SongReviews.Add(songReview);
                 await _applicationDbContext.SaveChangesAsync();
 
-                return RedirectToAction("Detail", "Song", new { Id = vm.Id });
+                return RedirectToAction("Detail", "Song", new { vm.Id });
             }
             else
             {
-                return RedirectToAction("Detail", "Song", new { Id = vm.Id, AlreadyReviewed = true });
+                return RedirectToAction("Detail", "Song", new { vm.Id, AlreadyReviewed = true });
             }
         }
 
@@ -83,11 +83,11 @@ namespace MediaCollection.Controllers
                 _applicationDbContext.AlbumReviews.Add(albumReview);
                 await _applicationDbContext.SaveChangesAsync();
 
-                return RedirectToAction("Detail", "Album", new { Id = vm.Id });
+                return RedirectToAction("Detail", "Album", new { vm.Id });
             }
             else
             {
-                return RedirectToAction("Detail", "Album", new { Id = vm.Id, AlreadyReviewed = true });
+                return RedirectToAction("Detail", "Album", new { vm.Id, AlreadyReviewed = true });
             }
         }
     }
