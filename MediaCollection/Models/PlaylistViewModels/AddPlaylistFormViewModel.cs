@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace MediaCollection.Models
 {
-    public class PlaylistIndexViewModel
+    public class AddPlaylistFormViewModel
     {
-        public IEnumerable<PlayListIndividualViewModel> PlayLists { get; set; }
+        public string NewPlaylistName { get; set; }
     }
 }
