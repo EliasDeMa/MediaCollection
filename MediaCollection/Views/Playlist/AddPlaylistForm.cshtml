@@ -1,0 +1,19 @@
+﻿@model AddPlaylistFormViewModel
+
+<form asp-controller="Music"
+      asp-action="AddPlaylist"
+      method="post">
+    <div class="form-row">
+
+        <div class="col-1">
+            <label asp-for="@Model.NewPlaylistName"></label>
+        </div>
+        <div class="col-8">
+            <input asp-for="@Model.NewPlaylistName" type="text" class="form-control" />
+        </div>
+
+        <div class="col-2">
+            <button class="btn btn-secondary" type="submit">Add PlayList</button>
+        </div>
+    </div>
+</form>

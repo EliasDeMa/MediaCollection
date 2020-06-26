@@ -52,8 +52,8 @@ else
                                     @foreach (var pl in item.PlayLists)
                                     {
                                         <a class="dropdown-item"
-                                           asp-controller="Music"
-                                           asp-action="AddSongToPlayList"
+                                           asp-controller="Playlist"
+                                           asp-action="AddSong"
                                            asp-route-songId="@item.Id"
                                            asp-route-playlistId="@pl.Id">@pl.Name</a>
                                     }
