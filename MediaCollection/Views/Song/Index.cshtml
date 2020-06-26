@@ -45,7 +45,7 @@ else
                     <td>
                         @if (signInManager.IsSignedIn(User))
                         {
-                            <a asp-controller="Music"
+                            <a asp-controller="Song"
                                asp-action="Edit"
                                asp-route-id="@item.Id"
                                class="btn btn-secondary">Edit</a>
@@ -84,6 +84,6 @@ else
     </table>
 }
 
-<a asp-controller="Music"
+<a asp-controller="Song"
    asp-action="Create"
    class="btn btn-primary">Add Song</a>
