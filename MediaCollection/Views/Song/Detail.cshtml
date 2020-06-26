@@ -16,9 +16,22 @@
 <strong>Release Date</strong>
 <p><em>@(Model.ReleaseDate?.ToShortDateString() ?? "No release date available.")</em></p>
 
+<strong>Video</strong>
+<p>
+    @if (!string.IsNullOrEmpty(Model.Link))
+    {
+
+        <iframe id="video " width="420" height="315" src="@Model.Link"></iframe>
+    }
+    else
+    {
+        <em>No video link available</em>
+    }
+</p>
+
 @if (signInManager.IsSignedIn(User))
 {
-    <partial name="../Shared/ReviewForm" model="@(new ReviewFormViewModel { Id = Model.Id, ReviewType = nameof(MediaCollection.Domain.Song) })"/>
+    <partial name="../Shared/ReviewForm" model="@(new ReviewFormViewModel { Id = Model.Id, ReviewType = nameof(MediaCollection.Domain.Song) })" />
 }
 
 <strong>Reviews</strong>
@@ -43,6 +56,6 @@ else
     <script>
 
         alert("You already reviewed this item");
-        
+
     </script>
 }

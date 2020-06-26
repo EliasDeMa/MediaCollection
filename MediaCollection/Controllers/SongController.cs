@@ -89,7 +89,8 @@ namespace MediaCollection.Controllers
             {
                 Title = vm.SongTitle,
                 NormalizedTitle = vm.SongTitle.ToUpper(),
-                Duration = vm.Duration
+                Duration = vm.Duration,
+                SongLink = vm.Link.Replace("watch?v=", "embed/")
             };
 
             await ChangeAlbum(vm.AlbumTitle, albumExists, songToDb);
@@ -171,7 +172,7 @@ namespace MediaCollection.Controllers
                     Score = review.Score,
                     User = review.User.UserName
                 }),
-                ReviewForm = new ReviewFormViewModel { Id = song.Id }
+                Link = song.SongLink
             };
 
             return View(vm);
@@ -218,6 +219,7 @@ namespace MediaCollection.Controllers
                 .FirstOrDefaultAsync(item => item.Id == id);
 
             origSong.Duration = vm.Duration;
+            origSong.SongLink = vm.Link.Replace("watch?v=", "embed/");
 
             if (origSong.NormalizedTitle != vm.SongTitle.ToUpper())
             {
