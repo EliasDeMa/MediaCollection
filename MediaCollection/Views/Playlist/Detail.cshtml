@@ -1,7 +1,9 @@
 ﻿@model PlaylistDetailViewModel
 @inject SignInManager<MediaCollection.Domain.MediaCollectionUser> signInManager
+@using System.Text.Json
 
 
+<button id="play-button">Play</button>
 <h2>@Model.Name</h2>
 
 @if (Model.Songs == null || !Model.Songs.Any())
@@ -17,7 +19,7 @@ else
                 <th>Album</th>
                 <th>Band</th>
                 <th>Release Date</th>
-                <th colspan="3">Duration</th>
+                <th colspan="2">Duration</th>
             </tr>
         </thead>
         <tbody>
@@ -33,44 +35,69 @@ else
                     <td>@item.BandName</td>
                     <td>@(item.ReleaseDate?.ToShortDateString() ?? "No release date added")</td>
                     <td>@item.Duration</td>
-                    <td>
-                        @if (signInManager.IsSignedIn(User))
-                        {
-                            <a asp-controller="Music"
-                               asp-action="Edit"
-                               asp-route-id="@item.Id"
-                               class="btn btn-secondary">Edit</a>
-                            <a asp-controller="Music"
-                               asp-action="Delete"
-                               asp-route-id="@item.Id"
-                               class="btn btn-secondary">Delete</a>
-                            <div class="dropdown">
-                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                                    Add to playlist
-                                </button>
-                                <div class="dropdown-menu">
-                                    @foreach (var pl in item.PlayLists)
-                                    {
-                                        <a class="dropdown-item"
-                                           asp-controller="Playlist"
-                                           asp-action="AddSong"
-                                           asp-route-songId="@item.Id"
-                                           asp-route-playlistId="@pl.Id">@pl.Name</a>
-                                    }
-                                </div>
-                            </div>
-                        }
-                    </td>
-                    <td>
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <a asp-controller="Music"
-                               asp-action="Hide"
-                               class="btn btn-secondary">Hide</a>
-                        }
-                    </td>
+                    <td><button class="play-button-individual" id="@item.Url">Play</button></td>
                 </tr>
             }
         </tbody>
     </table>
 }
+
+<div id="player"></div>
+
+<script>
+    // 2. This code loads the IFrame Player API code asynchronously.
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    // 3. This function creates an <iframe> (and YouTube player)
+    //    after the API code downloads.
+    var player;
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+            height: '390',
+            width: '640',
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    }
+
+    let playButton = document.getElementById('play-button');
+    playButton.addEventListener('click', () => {
+        player.playVideo();
+    })
+
+    let indPlayButtons = document.getElementsByClassName('play-button-individual')
+
+    for (var button of indPlayButtons) {
+        const id = button.id;
+        button.addEventListener('click', () =>  player.loadVideoById(id, 0));
+    }
+    // 4. The API will call this function when the video player is ready.
+    function onPlayerReady(event) {
+        event.target.playVideo();
+    }
+
+    // 5. The API calls this function when the player's state changes.
+    //    The function indicates that when playing a video (state=1),
+    //    the player should play for six seconds and then stop.
+    function onPlayerStateChange(event) {
+        
+        switch (event.data) {
+            case -1:
+                break;
+            case YT.PlayerState.PAUSED:
+                break;
+            case YT.PlayerState.ENDED:
+                break;
+            default:
+                break;
+        }
+    }
+    function stopVideo() {
+        player.stopVideo();
+    }
+</script>
