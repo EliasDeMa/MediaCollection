@@ -12,7 +12,10 @@ namespace MediaCollection.Domain
         public TimeSpan Duration { get; set; }
 
         public int? AlbumId { get; set; }
-        public Album Album { get; set; }
+
+        #nullable enable
+        public Album? Album { get; set; }
+        #nullable disable
         public ICollection<PlayListSong> PlayListSongs { get; set; }
         public ICollection<SongReview> SongReviews { get; set; }
     }
