@@ -7,6 +7,7 @@ using MediaCollection.Data;
 using MediaCollection.Data.Migrations;
 using MediaCollection.Domain;
 using MediaCollection.Models;
+using MediaCollection.Models.PlaylistViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
@@ -104,7 +105,7 @@ namespace MediaCollection.Controllers
                 Name = playlist.Name,
                 Songs = playlist.PlayListSongs
                 .Select(pls => pls.Song)
-                .Select(song => new MusicIndexViewModel
+                .Select(song => new PlaylistSong
                 {
                     Id = song.Id,
                     SongTitle = song.Title,
@@ -112,7 +113,7 @@ namespace MediaCollection.Controllers
                     AlbumTitle = song.Album.Title,
                     Duration = song.Duration,
                     ReleaseDate = song.Album.ReleaseDate,
-                    PlayLists = userPlaylists
+                    Url = song.SongLink
                 }),
             };
 
