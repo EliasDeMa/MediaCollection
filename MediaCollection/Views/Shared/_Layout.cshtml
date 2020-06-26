@@ -19,22 +19,24 @@
             <div style="height:100%">
                 <ul class="nav flex-column">
                     <li class="nav-item px-3">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
                     <li class="nav-item px-3">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Music" asp-action="Index">Music</a>
+                        <a class="nav-link text-light" asp-area="" asp-controller="Music" asp-action="Index">Music</a>
                     </li>
                     <li class="nav-item px-3">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </li>
-                    <partial name="_LoginPartial" />
+
                 </ul>
-                
+
             </div>
         </div>
         <div class="main">
             <div class="top-row px-4">
-                <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+                <ul class="nav flex-row">
+                    <partial name="_LoginPartial" />
+                </ul>
             </div>
             <div class="content px-4">
                 @RenderBody()
