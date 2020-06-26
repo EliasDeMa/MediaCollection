@@ -90,7 +90,7 @@ namespace MediaCollection.Controllers
                 Title = vm.SongTitle,
                 NormalizedTitle = vm.SongTitle.ToUpper(),
                 Duration = vm.Duration,
-                SongLink = vm.Link.Replace("watch?v=", "embed/")
+                SongLink = vm.Link.Replace("https://www.youtube.com/watch?v=", "")
             };
 
             await ChangeAlbum(vm.AlbumTitle, albumExists, songToDb);
@@ -219,7 +219,7 @@ namespace MediaCollection.Controllers
                 .FirstOrDefaultAsync(item => item.Id == id);
 
             origSong.Duration = vm.Duration;
-            origSong.SongLink = vm.Link.Replace("watch?v=", "embed/");
+            origSong.SongLink = vm.Link.Replace("https://www.youtube.com/watch?v=", "");
 
             if (origSong.NormalizedTitle != vm.SongTitle.ToUpper())
             {
