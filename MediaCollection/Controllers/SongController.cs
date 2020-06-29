@@ -38,26 +38,38 @@ namespace MediaCollection.Controllers
 
             foreach (var song in songs)
             {
-                var model = new MusicIndexViewModel
+                if (song.Hidden)
                 {
-                    Id = song.Id,
-                    SongTitle = song.Title,
-                    Duration = song.Duration,
-                    PlayLists = userPlaylists
-                };
-
-                if (song.Album != null)
-                {
-                    model.AlbumId = song.AlbumId;
-                    model.AlbumTitle = song.Album.Title;
-                    model.ReleaseDate = song.Album.ReleaseDate;
-                    if (song.Album.Band != null)
+                    songModels.Add(new MusicIndexViewModel
                     {
-                        model.BandName = song.Album.Band.Name;
-                    }
-                }
+                        Hidden = true,
+                        Id = song.Id,
+                    });
+                } 
+                else
+                {
+                    var model = new MusicIndexViewModel
+                    {
+                        Id = song.Id,
+                        Hidden = false,
+                        SongTitle = song.Title,
+                        Duration = song.Duration,
+                        PlayLists = userPlaylists
+                    };
 
-                songModels.Add(model);
+                    if (song.Album != null)
+                    {
+                        model.AlbumId = song.AlbumId;
+                        model.AlbumTitle = song.Album.Title;
+                        model.ReleaseDate = song.Album.ReleaseDate;
+                        if (song.Album.Band != null)
+                        {
+                            model.BandName = song.Album.Band.Name;
+                        }
+                    }
+
+                    songModels.Add(model);
+                }  
             }
 
             return View(songModels);
@@ -270,6 +282,18 @@ namespace MediaCollection.Controllers
             var song = await _applicationDbContext.Songs.FindAsync(id);
 
             _applicationDbContext.Songs.Remove(song);
+
+            await _applicationDbContext.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = "Admin")] 
+        public async Task<IActionResult> ToggleHide(int id)
+        {
+            var song = await _applicationDbContext.Songs.FindAsync(id);
+
+            song.Hidden = !song.Hidden;
 
             await _applicationDbContext.SaveChangesAsync();
 
