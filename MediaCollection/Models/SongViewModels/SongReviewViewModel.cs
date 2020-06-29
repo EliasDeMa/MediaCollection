@@ -9,6 +9,8 @@ namespace MediaCollection.Models
     {
         public string User { get; set; }
         public string Description { get; set; }
+        public bool Approved { get; set; }
         public int Score { get; set; }
+        public int Id { get; set; }
     }
 }

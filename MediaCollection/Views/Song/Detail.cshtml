@@ -1,6 +1,5 @@
 ﻿@model MusicDetailViewModel
 @inject SignInManager<MediaCollection.Domain.MediaCollectionUser> signInManager
-
 <strong>Title</strong>
 <p><em>@Model.SongTitle</em></p>
 
@@ -34,7 +33,7 @@
         player = new YT.Player('player', {
             height: '390',
             width: '640',
-            videoId: '@Model.Link.Replace("https://www.youtube.com/embed/", "")',
+            videoId: '@Model.Link?.Replace("https://www.youtube.com/embed/", "")',
             events: {
                 'onReady': onPlayerReady,
                 'onStateChange': onPlayerStateChange
@@ -77,11 +76,28 @@ else
 {
     @foreach (var review in Model.Reviews)
     {
-        <div>
-            <strong>@review.User</strong><br />
-            <em>@review.Score</em>
-            <p>@review.Description</p>
-        </div>
+        if (review.Approved)
+        {
+
+            <div>
+                <strong>@review.User</strong><br />
+                <em>@review.Score</em>
+                <p>@review.Description</p>
+            </div>
+        }
+        else if (User.IsInRole("Admin") && !review.Approved)
+        {
+            <div>
+                <strong>@review.User</strong><br />
+                <em>@review.Score</em>
+                <p>@review.Description</p>
+                <a asp-controller="Review"
+                   asp-action="ApproveSongReview"
+                   asp-route-reviewId="@review.Id"
+                   asp-route-songId="@Model.Id"
+                   class="btn btn-secondary">Approve Review</a>
+            </div>
+        }
     }
 }
 

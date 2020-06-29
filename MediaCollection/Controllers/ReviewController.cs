@@ -20,6 +20,9 @@ namespace MediaCollection.Controllers
             _applicationDbContext = applicationDbContext;
         }
 
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public IActionResult AddReview(ReviewFormViewModel vm)
         {
             switch (vm.ReviewType)
@@ -49,7 +52,8 @@ namespace MediaCollection.Controllers
                     Description = vm.NewReview,
                     Score = vm.NewReviewScore,
                     SongId = vm.Id,
-                    UserId = userId
+                    UserId = userId,
+                    Approved = false
                 };
 
                 _applicationDbContext.SongReviews.Add(songReview);
@@ -63,6 +67,7 @@ namespace MediaCollection.Controllers
             }
         }
 
+        [Authorize]
         public async Task<IActionResult> AddAlbumReview(ReviewFormViewModel vm)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -89,6 +94,30 @@ namespace MediaCollection.Controllers
             {
                 return RedirectToAction("Detail", "Album", new { vm.Id, AlreadyReviewed = true });
             }
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ApproveSongReview(int songId, int reviewId)
+        {
+            var review = await _applicationDbContext.SongReviews.FindAsync(reviewId);
+
+            review.Approved = true;
+
+            await _applicationDbContext.SaveChangesAsync();
+
+            return RedirectToAction("Detail", "Song", new { Id = songId });
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ApproveAlbumReview(int albumId, int reviewId)
+        {
+            var review = await _applicationDbContext.AlbumReviews.FindAsync(reviewId);
+
+            review.Approved = true;
+
+            await _applicationDbContext.SaveChangesAsync();
+
+            return RedirectToAction("Detail", "Song", new { Id = albumId });
         }
     }
 }

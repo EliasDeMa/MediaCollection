@@ -169,6 +169,8 @@ namespace MediaCollection.Controllers
                 .ThenInclude(album => album.Band)
                 .FirstOrDefaultAsync(item => item.Id == id);
 
+            var approvedReviews = new List<SongReviewViewModel>();
+
             var vm = new MusicDetailViewModel
             {
                 Id = song.Id,
@@ -178,14 +180,36 @@ namespace MediaCollection.Controllers
                 BandName = song.Album?.Band?.Name,
                 Duration = song.Duration,
                 ReleaseDate = song.Album?.ReleaseDate,
-                Reviews = song.SongReviews.Select(review => new SongReviewViewModel
-                {
-                    Description = review.Description,
-                    Score = review.Score,
-                    User = review.User.UserName
-                }),
                 Link = song.SongLink
             };
+
+            foreach (var item in song.SongReviews)
+            {
+                if (item.Approved)
+                {
+                    approvedReviews.Add(new SongReviewViewModel
+                    {
+                        Description = item.Description,
+                        Score = item.Score,
+                        User = item.UserId,
+                        Id = item.Id,
+                        Approved = true,
+                    });
+                }
+                else
+                {
+                    approvedReviews.Add(new SongReviewViewModel
+                    {
+                        Description = item.Description,
+                        Score = item.Score,
+                        User = item.UserId,
+                        Id = item.Id,
+                        Approved = false,
+                    });
+                }
+            }
+
+            vm.Reviews = approvedReviews;
 
             return View(vm);
         }
