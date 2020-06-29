@@ -9,6 +9,7 @@ namespace MediaCollection.Domain
     public class SongReview
     {
         public int Id { get; set; }
+        public bool Approved { get; set; }
         public string Description { get; set; }
 
         [Range(0, 10)]

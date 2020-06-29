@@ -6,6 +6,7 @@ namespace MediaCollection.Domain
     public class Song
     {
         public int Id { get; set; }
+        public bool Hidden { get; set; }
         public string Title { get; set; }
         public string NormalizedTitle { get; set; }
         public string SongLink { get; set; }
