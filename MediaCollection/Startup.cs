@@ -31,14 +31,29 @@ namespace MediaCollection
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddDefaultIdentity<MediaCollectionUser>()
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.WithOrigins("https://www.youtube.com/")
+                               .AllowAnyOrigin()
+                               .AllowAnyMethod()
+                               .AllowAnyHeader();
+                    });
+            });
+
             services.AddControllersWithViews();
             services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -66,6 +81,33 @@ namespace MediaCollection
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+            CreateRolesAndAssignUsers(serviceProvider);
+        }
+
+        private void CreateRolesAndAssignUsers(IServiceProvider serviceProvider)
+        {
+            CreateRoleIfNotExists(serviceProvider, "Admin");
+            CreateRoleIfNotExists(serviceProvider, "User");
+
+            var userManager = serviceProvider.GetRequiredService<UserManager<MediaCollectionUser>>();
+
+            var elias = userManager.FindByEmailAsync("elias.demaertelaere@gmail.com").Result;
+
+            if (elias != null && !userManager.IsInRoleAsync(elias, "Admin").Result)
+            {
+                userManager.AddToRoleAsync(elias, "Admin").Wait();
+            }
+        }
+
+        private static void CreateRoleIfNotExists(IServiceProvider serviceProvider, string role)
+        {
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            if (!roleManager.RoleExistsAsync(role).Result)
+            {
+                roleManager.CreateAsync(new IdentityRole(role)).Wait();
+            }
         }
     }
 }
