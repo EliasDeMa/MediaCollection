@@ -11,7 +11,7 @@ else
     <table>
         <thead>
             <tr>
-                <th colspan="2">Name</th>
+                <th>Name</th>
             </tr>
         </thead>
         <tbody>
@@ -22,11 +22,14 @@ else
                     <td>
                         <a asp-controller="Podcast"
                            asp-action="Detail"
-                           asp-route-id="@item.Id"
-                           class="btn btn-primary">View</a>
+                           asp-route-id="@item.Id">@item.Name</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 }
+
+<a asp-controller="Podcast"
+   asp-action="Create"
+   class="btn btn-primary">Add Podcast</a>

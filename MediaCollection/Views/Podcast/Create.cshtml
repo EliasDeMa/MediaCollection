@@ -1,0 +1,21 @@
+﻿@model MediaCollection.Models.PodcastModels.PodcastCreateViewModel
+
+<form asp-action="Create"
+      asp-controller="Podcast"
+      method="post">
+
+
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span class="text-danger" asp-validation-for="Name"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" class="form-control" cols="50" rows="4"></textarea> 
+        <span class="text-danger" asp-validation-for="Description"></span>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Enter</button>
+</form>
