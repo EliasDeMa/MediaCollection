@@ -10,5 +10,6 @@ namespace MediaCollection.Domain
         public string EpisodeTitle { get; set; }
         public string NormalizedEpisodeTitle { get; set; }
         public TimeSpan Duration { get; set; }
+        public string Link { get; set; }
     }
 }

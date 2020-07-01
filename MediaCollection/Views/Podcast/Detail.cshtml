@@ -1,0 +1,56 @@
+﻿@model MediaCollection.Models.PodcastModels.PodcastDetailViewModel
+
+<strong>Title</strong>
+<p>@Model.Name</p>
+
+<strong>Description</strong>
+<p>@Model.Description</p>
+
+@if (Model.Episodes == null || !Model.Episodes.Any())
+{
+    <p><em>No songs available for this album</em></p>
+}
+else
+{
+    <table cellpadding="5" class="table-bordered">
+        <thead>
+            <tr>
+                <th>Episode title</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var song in Model.Episodes)
+            {
+                <tr>
+                    <td>@song.EpisodeName</td>
+                    <td id="https://soundcloud.com/dumpaccount654321/il-mare-eterno-nella-mia-anima-battle-tendency-extended"></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<div id="https://soundcloud.com/dumpaccount654321/il-mare-eterno-nella-mia-anima-battle-tendency-extended"></div>
+
+@*@if (signInManager.IsSignedIn(User))
+    {
+        <partial name="ReviewForm" model="@(new ReviewFormViewModel { Id = Model.Id, ReviewType = nameof(MediaCollection.Domain.Album) })" />
+    }*@
+
+<script src="https://connect.soundcloud.com/sdk/sdk-3.3.2.js"></script>
+<script>
+    SC.initialize({
+        client_id: ''
+    });
+
+    var track_url = 'https://soundcloud.com/forss/flickermood';
+    SC.oEmbed(track_url, { auto_play: true }).then(function (oEmbed) {
+        debugger;
+        console.log('oEmbed response: ', oEmbed);
+        /**/
+        let div = document.getElementById('https://soundcloud.com/dumpaccount654321/il-mare-eterno-nella-mia-anima-battle-tendency-extended');
+        div.innerHTML = oEmbed.html;;
+    /**/
+});
+
+</script>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediaCollection.Data;
 using MediaCollection.Domain;
+using MediaCollection.Models.PodcastEpisodeModels;
 using MediaCollection.Models.PodcastModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,25 @@ namespace MediaCollection.Controllers
             await _applicationDbContext.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Detail(int id)
+        {
+            var podcast = await _applicationDbContext.Podcasts
+                .Include(pc => pc.Episodes)
+                .FirstOrDefaultAsync(pc => pc.Id == id);
+
+            return View(new PodcastDetailViewModel
+            {
+                Name = podcast.Name,
+                Description = podcast.Description,
+                Episodes = podcast.Episodes.Select(episode => new PodcastEpisodeIndexViewModel
+                { 
+                    Id = episode.Id,
+                    EpisodeName = episode.EpisodeTitle,
+                    Link = episode.Link
+                })
+            });
         }
     }
 }
