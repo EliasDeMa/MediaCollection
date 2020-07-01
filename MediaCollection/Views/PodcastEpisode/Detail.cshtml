@@ -1,0 +1,23 @@
+﻿@model MediaCollection.Models.PodcastEpisodeModels.PodcastEpisodeDetailViewModel
+
+<strong><em>@Model.Title</em></strong>
+
+<div id="podcast-div"></div>
+
+<script src="https://connect.soundcloud.com/sdk/sdk-3.3.2.js"></script>
+<script>
+    SC.initialize({
+        client_id: '@DotNetEnv.Env.GetString("SOUNDCLOUD_API_KEY")'
+    });
+
+    var track_url = '@Model.Link';
+    SC.oEmbed(track_url, { auto_play: true }).then(function (oEmbed) {
+        debugger;
+        console.log('oEmbed response: ', oEmbed);
+        /**/
+        let div = document.getElementById('podcast-div');
+        div.innerHTML = oEmbed.html;;
+    /**/
+});
+
+</script>
