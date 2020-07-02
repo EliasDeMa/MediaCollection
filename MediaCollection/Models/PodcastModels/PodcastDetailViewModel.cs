@@ -8,6 +8,7 @@ namespace MediaCollection.Models.PodcastModels
 {
     public class PodcastDetailViewModel
     {
+        public int Id { get; set; }
         public string Name { get; internal set; }
         public string Description { get; internal set; }
         public IEnumerable<PodcastEpisodeIndexViewModel> Episodes { get; internal set; }

@@ -65,6 +65,7 @@ namespace MediaCollection.Controllers
 
             return View(new PodcastDetailViewModel
             {
+                Id = podcast.Id,
                 Name = podcast.Name,
                 Description = podcast.Description,
                 Episodes = podcast.Episodes.Select(episode => new PodcastEpisodeIndexViewModel
