@@ -20,7 +20,7 @@ namespace MediaCollection.Controllers
             _applicationDbContext = applicationDbContext;
         }
 
-        public async Task<IActionResult> Detail(int id)
+        public async Task<IActionResult> Detail(int id, bool alreadyReviewed = false)
         {
             var episode = await _applicationDbContext.PodcastEpisodes
                 .Include(ep => ep.Podcast)
@@ -30,7 +30,8 @@ namespace MediaCollection.Controllers
             {
                 Link = episode.Link,
                 Duration = episode.Duration,
-                Title = episode.EpisodeTitle
+                Title = episode.EpisodeTitle,
+                AlreadyReviewed = alreadyReviewed
             });
         }
 
