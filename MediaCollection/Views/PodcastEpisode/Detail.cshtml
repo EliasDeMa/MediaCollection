@@ -1,8 +1,15 @@
 ﻿@model MediaCollection.Models.PodcastEpisodeModels.PodcastEpisodeDetailViewModel
+@inject SignInManager<MediaCollection.Domain.MediaCollectionUser> signInManager
 
 <strong><em>@Model.Title</em></strong>
 
 <div id="podcast-div"></div>
+
+@if (signInManager.IsSignedIn(User))
+{
+    <partial name="ReviewForm" model="@(new ReviewFormViewModel { Id = Model.Id, ReviewType = nameof(MediaCollection.Models.PodcastEpisodeModels.PodcastEpisodeDetailViewModel) })" />
+}
+
 
 <script src="https://connect.soundcloud.com/sdk/sdk-3.3.2.js"></script>
 <script>
