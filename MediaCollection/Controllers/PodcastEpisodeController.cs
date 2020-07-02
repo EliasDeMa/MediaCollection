@@ -24,14 +24,46 @@ namespace MediaCollection.Controllers
         {
             var episode = await _applicationDbContext.PodcastEpisodes
                 .Include(ep => ep.Podcast)
+                .Include(ep => ep.PodcastEpisodeReviews)
+                .ThenInclude(review => review.User)
                 .FirstOrDefaultAsync(ep => ep.Id == id);
+
+            var approvedReviews = new List<PodcastEpisodeReviewViewModel>();
+
+            foreach (var item in episode.PodcastEpisodeReviews)
+            {
+                if (item.Approved)
+                {
+                    approvedReviews.Add(new PodcastEpisodeReviewViewModel
+                    {
+                        Description = item.Description,
+                        Score = item.Score,
+                        User = item.User.UserName,
+                        Id = item.Id,
+                        Approved = true,
+                    });
+                }
+                else
+                {
+                    approvedReviews.Add(new PodcastEpisodeReviewViewModel
+                    {
+                        Description = item.Description,
+                        Score = item.Score,
+                        User = item.User.UserName,
+                        Id = item.Id,
+                        Approved = false,
+                    });
+                }
+            }
 
             return View(new PodcastEpisodeDetailViewModel
             {
+                Id = id,
                 Link = episode.Link,
                 Duration = episode.Duration,
                 Title = episode.EpisodeTitle,
-                AlreadyReviewed = alreadyReviewed
+                AlreadyReviewed = alreadyReviewed,
+                Reviews = approvedReviews
             });
         }
 
