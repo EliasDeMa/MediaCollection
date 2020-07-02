@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MediaCollection.Domain
 {
-    public class PodcastReview
+    public class PodcastEpisodeReview
     {
         public int Id { get; set; }
         public bool Approved { get; set; }
@@ -14,10 +14,8 @@ namespace MediaCollection.Domain
 
         [Range(0, 10)]
         public int Score { get; set; }
-
-        public int PodcastId { get; set; }
-        public Podcast Podcast { get; set; }
-
+        public int PodcastEpisodeId { get; set; }
+        public PodcastEpisode PodcastEpisode { get; set; }
         public string UserId { get; set; }
         public MediaCollectionUser User { get; set; }
     }

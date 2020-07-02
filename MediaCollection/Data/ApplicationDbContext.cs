@@ -41,5 +41,6 @@ namespace MediaCollection.Data
         public DbSet<AlbumReview> AlbumReviews { get; set; }
         public DbSet<Podcast> Podcasts { get; set; }
         public DbSet<PodcastEpisode> PodcastEpisodes { get; set; }
+        public DbSet<PodcastEpisodeReview> PodcastEpisodeReviews { get; set; }
     }
 }
