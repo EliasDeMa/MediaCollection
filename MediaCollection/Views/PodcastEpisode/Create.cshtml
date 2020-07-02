@@ -1,0 +1,33 @@
+﻿@model MediaCollection.Models.PodcastEpisodeModels.PodcastEpisodeCreateViewModel
+
+    <form asp-action="Create"
+          asp-controller="PodcastEpisode"
+          asp-route-id="@Model.PodcastId"
+          method="post">
+
+        <div class="form-group">
+            <label asp-for="EpisodeNumber"></label>
+            <input asp-for="EpisodeNumber" class="form-control" />
+            <span class="text-danger" asp-validation-for="EpisodeNumber"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="EpisodeName"></label>
+            <input asp-for="EpisodeName" class="form-control" />
+            <span class="text-danger" asp-validation-for="EpisodeName"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Duration"></label>
+            <input asp-for="Duration" class="form-control" type="time" value="00:00" step="1" />
+            <span class="text-danger" asp-validation-for="Duration"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Url"></label>
+            <input asp-for="Url" class="form-control" />
+            <span class="text-danger" asp-validation-for="Url"></span>
+        </div>
+
+        <button class="btn btn-primary" type="submit">Enter</button>
+    </form>

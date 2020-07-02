@@ -1,5 +1,7 @@
 ﻿using MediaCollection.Data;
+using MediaCollection.Domain;
 using MediaCollection.Models.PodcastEpisodeModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -30,6 +32,35 @@ namespace MediaCollection.Controllers
                 Duration = episode.Duration,
                 Title = episode.EpisodeTitle
             });
+        }
+
+        public IActionResult Create(int id)
+        {
+            return View(new PodcastEpisodeCreateViewModel
+            {
+                PodcastId = id
+            });
+        }
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> Create(int id, PodcastEpisodeCreateViewModel vm)
+        {
+            var episode = new PodcastEpisode
+            {
+                EpisodeNumber = vm.EpisodeNumber,
+                EpisodeTitle = vm.EpisodeName,
+                NormalizedEpisodeTitle = vm.EpisodeName.ToUpper(),
+                Duration = vm.Duration,
+                Link = vm.Url,
+                PodcastId = id
+            };
+
+            await _applicationDbContext.PodcastEpisodes.AddAsync(episode);
+            await _applicationDbContext.SaveChangesAsync();
+
+            return RedirectToAction("Detail", "Podcast", new { Id = id });
         }
     }
 }
