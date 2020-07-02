@@ -191,7 +191,7 @@ namespace MediaCollection.Controllers
                     {
                         Description = item.Description,
                         Score = item.Score,
-                        User = item.UserId,
+                        User = item.User.UserName,
                         Id = item.Id,
                         Approved = true,
                     });
@@ -202,7 +202,7 @@ namespace MediaCollection.Controllers
                     {
                         Description = item.Description,
                         Score = item.Score,
-                        User = item.UserId,
+                        User = item.User.UserName,
                         Id = item.Id,
                         Approved = false,
                     });
