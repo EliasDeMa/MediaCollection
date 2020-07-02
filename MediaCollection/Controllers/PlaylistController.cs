@@ -58,10 +58,6 @@ namespace MediaCollection.Controllers
             _applicationDbContext.PlayLists.Add(playlist);
             await _applicationDbContext.SaveChangesAsync();
 
-            var userPlaylists = await _applicationDbContext.PlayLists
-                .Where(pl => pl.UserId == userId)
-                .ToListAsync();
-
             return RedirectToAction("Index");
         }
 
@@ -98,8 +94,6 @@ namespace MediaCollection.Controllers
                 .ThenInclude(album => album.Band)
                 .FirstOrDefaultAsync(pl => pl.Id == id);
 
-            var userPlaylists = await GetUserPlayLists(userId);
-
             var vm = new PlaylistDetailViewModel
             {
                 Name = playlist.Name,
@@ -118,18 +112,6 @@ namespace MediaCollection.Controllers
             };
 
             return View(vm);
-        }
-
-        private async Task<IEnumerable<PlayListIndividualViewModel>> GetUserPlayLists(string userId)
-        {
-            return (await _applicationDbContext.PlayLists
-                .Where(pl => pl.UserId == userId)
-                .ToListAsync())
-                .Select(item => new PlayListIndividualViewModel
-                {
-                    Id = item.Id,
-                    Name = item.Name
-                });
         }
     }
 }
