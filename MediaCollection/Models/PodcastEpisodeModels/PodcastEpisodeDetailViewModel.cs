@@ -11,5 +11,6 @@ namespace MediaCollection.Models.PodcastEpisodeModels
         public string Link { get; internal set; }
         public TimeSpan Duration { get; internal set; }
         public string Title { get; internal set; }
+        public bool AlreadyReviewed { get; internal set; }
     }
 }
