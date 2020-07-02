@@ -95,6 +95,7 @@ namespace MediaCollection.Controllers
             }
         }
 
+        [Authorize]
         public async Task<IActionResult> AddPodcastEpisodeReview(ReviewFormViewModel vm)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
