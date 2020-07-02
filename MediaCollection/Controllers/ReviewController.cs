@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MediaCollection.Data;
 using MediaCollection.Domain;
 using MediaCollection.Models;
+using MediaCollection.Models.PodcastEpisodeModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,15 +26,13 @@ namespace MediaCollection.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddReview(ReviewFormViewModel vm)
         {
-            switch (vm.ReviewType)
+            return vm.ReviewType switch
             {
-                case "Song":
-                    return RedirectToAction("AddSongReview", vm); ;
-                case "Album":
-                    return RedirectToAction("AddAlbumReview", vm);
-                default:
-                    return RedirectToAction("Index", "Music");
-            }
+                nameof(Song) => RedirectToAction("AddSongReview", vm),
+                nameof(Album) => RedirectToAction("AddAlbumReview", vm),
+                nameof(PodcastEpisode) => RedirectToAction("AddPodcastEpisodeReview", vm),
+                _ => RedirectToAction("Index", "Music"),
+            };
         }
 
 
@@ -96,6 +95,34 @@ namespace MediaCollection.Controllers
             }
         }
 
+        public async Task<IActionResult> AddPodcastEpisodeReview(ReviewFormViewModel vm)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var userReviews = _applicationDbContext.PodcastEpisodeReviews
+                .Where(x => x.PodcastEpisodeId == vm.Id && userId == x.UserId);
+
+            if (!userReviews.Any())
+            {
+                var podcastEpisodeReview = new PodcastEpisodeReview
+                {
+                    Description = vm.NewReview,
+                    Score = vm.NewReviewScore,
+                    PodcastEpisodeId = vm.Id,
+                    UserId = userId
+                };
+
+                _applicationDbContext.PodcastEpisodeReviews.Add(podcastEpisodeReview);
+                await _applicationDbContext.SaveChangesAsync();
+
+                return RedirectToAction("Detail", "PodcastEpisode", new { vm.Id });
+            }
+            else
+            {
+                return RedirectToAction("Detail", "PodcastEpisode", new { vm.Id, AlreadyReviewed = true });
+            }
+        }
+
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ApproveSongReview(int songId, int reviewId)
         {
@@ -118,6 +145,18 @@ namespace MediaCollection.Controllers
             await _applicationDbContext.SaveChangesAsync();
 
             return RedirectToAction("Detail", "Song", new { Id = albumId });
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ApprovePodcastEpisodeReview(int podcastEpisodeId, int reviewId)
+        {
+            var review = await _applicationDbContext.PodcastEpisodeReviews.FindAsync(reviewId);
+
+            review.Approved = true;
+
+            await _applicationDbContext.SaveChangesAsync();
+
+            return RedirectToAction("Detail", "PodcastEpisode", new { Id = podcastEpisodeId });
         }
     }
 }
