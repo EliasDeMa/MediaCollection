@@ -1,7 +1,5 @@
 ﻿@model PlaylistDetailViewModel
 @inject SignInManager<MediaCollection.Domain.MediaCollectionUser> signInManager
-@using System.Text.Json
-
 
 <button id="play-button">Play</button>
 <h2>@Model.Name</h2>
@@ -44,6 +42,19 @@ else
 
 <div id="player"></div>
 
+<partial name="_AddCommentForm.cshtml" model="@(new MediaCollection.Models.PlaylistViewModels.AddPlaylistCommentViewModel { PlaylistId = Model.Id })"/>
+
+<div class="comments">
+    <h2>Comments</h2>
+    @foreach (var comment in Model.PlaylistComments)
+    {
+        <div class="comment">
+            <h3>@comment.User</h3>
+            <p><em>@comment.Content</em></p>
+        </div>
+    }
+</div>
+
 <script>
     // 2. This code loads the IFrame Player API code asynchronously.
     var tag = document.createElement('script');
@@ -68,7 +79,7 @@ else
         });
     }
 
-    
+
     let indPlayButtons = document.getElementsByClassName('play-button-individual')
 
     for (var button of indPlayButtons) {
@@ -108,7 +119,7 @@ else
                 player.playVideo();
             }
         }
-        
+
     }
     function stopVideo() {
         player.stopVideo();
