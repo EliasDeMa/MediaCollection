@@ -92,6 +92,8 @@ namespace MediaCollection.Controllers
                 .ThenInclude(pls => pls.Song)
                 .ThenInclude(song => song.Album)
                 .ThenInclude(album => album.Band)
+                .Include(playlist => playlist.PlaylistComments)
+                .ThenInclude(comment => comment.User)
                 .FirstOrDefaultAsync(pl => pl.Id == id);
 
             var vm = new PlaylistDetailViewModel
@@ -110,6 +112,11 @@ namespace MediaCollection.Controllers
                     ReleaseDate = song.Album.ReleaseDate,
                     Url = song.SongLink
                 }),
+                PlaylistComments = playlist.PlaylistComments.Select(item => new PlaylistCommentViewModel
+                {
+                    User = item.User.UserName,
+                    Content = item.Content
+                })
             };
 
             return View(vm);
