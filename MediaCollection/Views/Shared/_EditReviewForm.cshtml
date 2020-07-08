@@ -1,0 +1,50 @@
+﻿@model ReviewFormViewModel
+
+<form asp-controller="Review"
+      asp-action="EditReview"
+      asp-route-id="@Model.Id"
+      method="post">
+    <div class="form-group" style="width:50%">
+        <label asp-for="NewReviewScore"></label>
+        <div class="range-slider">
+            <input asp-for="NewReviewScore" type="range" min="0" max="10" step="1" class="range-slider__range">
+            <span class="range-slider__value">0</span>
+            <span class="text-danger" asp-validation-for="NewReviewScore"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="NewReview"></label>
+        <textarea asp-for="NewReview" cols="50" rows="5"></textarea>
+        <span class="text-danger" asp-validation-for="NewReview"></span>
+    </div>
+
+    <div class="form-group">
+        <input asp-for="ReviewType" type="hidden" />
+
+    </div>
+    <button class="btn btn-primary" type="submit">Enter</button>
+</form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    var rangeSlider = function () {
+        var slider = $('.range-slider'),
+            range = $('.range-slider__range'),
+            value = $('.range-slider__value');
+
+        slider.each(function () {
+
+            value.each(function () {
+                var value = $(this).prev().attr('value');
+                $(this).html(value);
+            });
+
+            range.on('input', function () {
+                $(this).next(value).html(this.value);
+            });
+        });
+    };
+
+    rangeSlider();
+</script>

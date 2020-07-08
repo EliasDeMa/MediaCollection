@@ -261,3 +261,7 @@ input::-moz-focus-inner,
 input::-moz-focus-outer {
     border: 0;
 }
+
+.hidden {
+    display: none;
+}
