@@ -1,0 +1,14 @@
+﻿@model MediaCollection.Models.PlaylistViewModels.AddPlaylistCommentViewModel
+
+<form asp-controller="Comment"
+      asp-action="AddComment"
+      asp-route-id="@Model.PlaylistId"
+      method="post">
+
+    <div class="form-group">
+        <label asp-for="Content"></label>
+        <input asp-for="Content" type="text"/>
+        <span class="text-danger" asp-validation-for="Content"></span>
+    </div>
+    <button class="btn btn-primary" type="submit">Enter</button>
+</form>
