@@ -9,6 +9,7 @@ using MediaCollection.Models;
 using MediaCollection.Models.PodcastEpisodeModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MediaCollection.Controllers
 {
@@ -35,6 +36,17 @@ namespace MediaCollection.Controllers
             };
         }
 
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditReview(ReviewFormViewModel vm)
+        {
+            return vm.ReviewType switch
+            {
+                nameof(Song) => RedirectToAction("EditSongReview", vm),
+                _ => RedirectToAction("Index", "Music"),
+            };
+        }
 
         [Authorize]
         public async Task<IActionResult> AddSongReview(ReviewFormViewModel vm)
@@ -122,6 +134,23 @@ namespace MediaCollection.Controllers
             {
                 return RedirectToAction("Detail", "PodcastEpisode", new { vm.Id, AlreadyReviewed = true });
             }
+        }
+
+        [Authorize]
+        public async Task<IActionResult> EditSongReview(ReviewFormViewModel vm)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var origReview = await _applicationDbContext.SongReviews
+                .FirstOrDefaultAsync(review => review.UserId == userId);
+
+            origReview.Score = vm.NewReviewScore;
+            origReview.Description = vm.NewReview;
+            origReview.Approved = false;
+
+            await _applicationDbContext.SaveChangesAsync();
+
+            return RedirectToAction("Detail", "Song", new { vm.Id });
         }
 
         [Authorize(Roles = "Admin")]
