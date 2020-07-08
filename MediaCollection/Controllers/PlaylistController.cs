@@ -96,6 +96,7 @@ namespace MediaCollection.Controllers
 
             var vm = new PlaylistDetailViewModel
             {
+                Id = playlist.Id,
                 Name = playlist.Name,
                 Songs = playlist.PlayListSongs
                 .Select(pls => pls.Song)
