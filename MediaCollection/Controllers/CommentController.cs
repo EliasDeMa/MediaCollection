@@ -22,9 +22,6 @@ namespace MediaCollection.Controllers
 
         public async Task<IActionResult> AddComment(int id, AddPlaylistCommentViewModel vm)
         {
-            var playlist = await _applicationDbContext.PlayLists
-                .FirstOrDefaultAsync(playlist => playlist.Id == id);
-
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             await _applicationDbContext.PlaylistComments.AddAsync(new PlaylistComment
@@ -36,7 +33,7 @@ namespace MediaCollection.Controllers
 
             await _applicationDbContext.SaveChangesAsync();
 
-            return RedirectToAction("Playlist", "Detail", new { Id = id });
+            return RedirectToAction("Detail", "Playlist", new { Id = id });
         }
     }
 }
