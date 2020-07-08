@@ -44,6 +44,8 @@ namespace MediaCollection.Controllers
             return vm.ReviewType switch
             {
                 nameof(Song) => RedirectToAction("EditSongReview", vm),
+                nameof(Album) => RedirectToAction("EditAlbumReview", vm),
+                nameof(PodcastEpisode) => RedirectToAction("EditPodcastEpisodeReview", vm),
                 _ => RedirectToAction("Index", "Music"),
             };
         }
@@ -151,6 +153,40 @@ namespace MediaCollection.Controllers
             await _applicationDbContext.SaveChangesAsync();
 
             return RedirectToAction("Detail", "Song", new { vm.Id });
+        }
+
+        [Authorize]
+        public async Task<IActionResult> EditAlbumReview(ReviewFormViewModel vm)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var origReview = await _applicationDbContext.AlbumReviews
+                .FirstOrDefaultAsync(review => review.UserId == userId);
+
+            origReview.Score = vm.NewReviewScore;
+            origReview.Description = vm.NewReview;
+            origReview.Approved = false;
+
+            await _applicationDbContext.SaveChangesAsync();
+
+            return RedirectToAction("Detail", "Song", new { vm.Id });
+        }
+
+        [Authorize]
+        public async Task<IActionResult> EditPodcastEpisodeReview(ReviewFormViewModel vm)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var origReview = await _applicationDbContext.PodcastEpisodeReviews
+                .FirstOrDefaultAsync(review => review.UserId == userId);
+
+            origReview.Score = vm.NewReviewScore;
+            origReview.Description = vm.NewReview;
+            origReview.Approved = false;
+
+            await _applicationDbContext.SaveChangesAsync();
+
+            return RedirectToAction("Detail", "PodcastEpisode", new { vm.Id });
         }
 
         [Authorize(Roles = "Admin")]

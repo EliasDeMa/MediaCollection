@@ -5,7 +5,7 @@
 
 <div id="podcast-div"></div>
 
-@if (signInManager.IsSignedIn(User))
+@if (signInManager.IsSignedIn(User) && !Model.Reviews.Any(review => review.User == User.Identity.Name))
 {
     <partial name="ReviewForm" model="@(new ReviewFormViewModel { Id = Model.Id, ReviewType = nameof(MediaCollection.Domain.PodcastEpisode) })" />
 }
@@ -22,11 +22,35 @@ else
         if (review.Approved)
         {
 
-            <div>
-                <strong>@review.User</strong><br />
-                <em>@review.Score</em>
-                <p>@review.Description</p>
-            </div>
+            @if (review.User == User.Identity.Name)
+            {
+                <div id="user-review">
+                    <strong>@review.User</strong><br />
+                    <em>@review.Score</em>
+                    <p>@review.Description</p>
+
+                    <button class="btn btn-secondary"
+                            id="edit-button">
+                        Edit
+                    </button>
+                </div>
+
+                <div class="hidden" id="user-review-form">
+                    <partial name="../Shared/_EditReviewForm" model="@(new ReviewFormViewModel {
+              Id = Model.Id, ReviewType = nameof(MediaCollection.Domain.PodcastEpisode),
+              NewReviewScore = review.Score,
+              NewReview = review.Description,
+                })" />
+                </div>
+            }
+            else
+            {
+                <div>
+                    <strong>@review.User</strong><br />
+                    <em>@review.Score</em>
+                    <p>@review.Description</p>
+                </div>
+            }
         }
         else if (User.IsInRole("Admin") && !review.Approved)
         {
@@ -35,9 +59,9 @@ else
                 <em>@review.Score</em>
                 <p>@review.Description</p>
                 <a asp-controller="Review"
-                   asp-action="ApproveSongReview"
+                   asp-action="ApprovePodcastEpisodeReview"
                    asp-route-reviewId="@review.Id"
-                   asp-route-songId="@Model.Id"
+                   asp-route-podcastEpisodeId="@Model.Id"
                    class="btn btn-secondary">Approve Review</a>
             </div>
         }
@@ -58,6 +82,17 @@ else
         let div = document.getElementById('podcast-div');
         div.innerHTML = oEmbed.html;;
     /**/
+
+
+
+    const editButton = document.getElementById('edit-button');
+    const review = document.getElementById('user-review');
+    const reviewForm = document.getElementById('user-review-form');
+
+    editButton.addEventListener('click', () => {
+        review.classList.toggle('hidden');
+        reviewForm.classList.toggle('hidden');
+    })
 });
 
 </script>
