@@ -32,7 +32,86 @@ else
     </table>
 }
 
-@if (signInManager.IsSignedIn(User))
+@if (signInManager.IsSignedIn(User) && !Model.Reviews.Any(review => review.User == User.Identity.Name))
 {
     <partial name="ReviewForm" model="@(new ReviewFormViewModel { Id = Model.Id, ReviewType = nameof(MediaCollection.Domain.Album) })" />
 }
+
+<strong>Reviews</strong>
+@if (Model.Reviews == null || !Model.Reviews.Any())
+{
+    <p><em>No reviews available.</em></p>
+}
+else
+{
+    @foreach (var review in Model.Reviews)
+    {
+        if (review.Approved)
+        {
+
+            @if (review.User == User.Identity.Name)
+            {
+                <div id="user-review">
+                    <strong>@review.User</strong><br />
+                    <em>@review.Score</em>
+                    <p>@review.Description</p>
+
+                    <button class="btn btn-secondary"
+                            id="edit-button">
+                        Edit
+                    </button>
+                </div>
+
+                <div class="hidden" id="user-review-form">
+                    <partial name="../Shared/_EditReviewForm" model="@(new ReviewFormViewModel {
+              Id = Model.Id, ReviewType = nameof(MediaCollection.Domain.Album),
+              NewReviewScore = review.Score,
+              NewReview = review.Description,
+                })" />
+                </div>
+            }
+            else
+            {
+                <div>
+                    <strong>@review.User</strong><br />
+                    <em>@review.Score</em>
+                    <p>@review.Description</p>
+                </div>
+            }
+
+        }
+        else if (User.IsInRole("Admin") && !review.Approved)
+        {
+            <div>
+                <strong>@review.User</strong><br />
+                <em>@review.Score</em>
+                <p>@review.Description</p>
+                <a asp-controller="Review"
+                   asp-action="ApproveAlbumReview"
+                   asp-route-reviewId="@review.Id"
+                   asp-route-albumId="@Model.Id"
+                   class="btn btn-secondary">Approve Review</a>
+            </div>
+        }
+    }
+}
+
+@if (Model.AlreadyReviewed)
+{
+    <script>
+
+        alert("You already reviewed this item");
+
+    </script>
+}
+
+<script>
+    const editButton = document.getElementById('edit-button');
+    const review = document.getElementById('user-review');
+    const reviewForm = document.getElementById('user-review-form');
+
+    editButton.addEventListener('click', () => {
+        review.classList.toggle('hidden');
+        reviewForm.classList.toggle('hidden');
+    })
+</script>
