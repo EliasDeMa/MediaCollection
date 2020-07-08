@@ -169,7 +169,7 @@ namespace MediaCollection.Controllers
 
             await _applicationDbContext.SaveChangesAsync();
 
-            return RedirectToAction("Detail", "Song", new { vm.Id });
+            return RedirectToAction("Detail", "Album", new { vm.Id });
         }
 
         [Authorize]
@@ -210,7 +210,7 @@ namespace MediaCollection.Controllers
 
             await _applicationDbContext.SaveChangesAsync();
 
-            return RedirectToAction("Detail", "Song", new { Id = albumId });
+            return RedirectToAction("Detail", "Album", new { Id = albumId });
         }
 
         [Authorize(Roles = "Admin")]
