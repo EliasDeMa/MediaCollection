@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using MediaCollection.Data;
 using MediaCollection.Domain;
 using MediaCollection.Models;
+using MediaCollection.Models.SongViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -32,29 +34,33 @@ namespace MediaCollection.Controllers
                 .ThenInclude(album => album.Band)
                 .ToListAsync();
 
+            var bands = await _applicationDbContext.Bands.ToListAsync();
+            var albums = await _applicationDbContext.Albums.ToListAsync();
+            List<SelectListItem> bandSelectList, albumSelectList;
+            ToSelectList(bands, albums, out bandSelectList, out albumSelectList);
+
             var userPlaylists = await GetUserPlayLists(userId);
 
-            List<MusicIndexViewModel> songModels = new List<MusicIndexViewModel>();
+            var songModels = new List<SongIndexViewModel>();
 
             foreach (var song in songs)
             {
                 if (song.Hidden)
                 {
-                    songModels.Add(new MusicIndexViewModel
+                    songModels.Add(new SongIndexViewModel
                     {
                         Hidden = true,
                         Id = song.Id,
                     });
-                } 
+                }
                 else
                 {
-                    var model = new MusicIndexViewModel
+                    var model = new SongIndexViewModel
                     {
                         Id = song.Id,
                         Hidden = false,
                         SongTitle = song.Title,
                         Duration = song.Duration,
-                        PlayLists = userPlaylists
                     };
 
                     if (song.Album != null)
@@ -69,10 +75,76 @@ namespace MediaCollection.Controllers
                     }
 
                     songModels.Add(model);
-                }  
+                }
             }
 
-            return View(songModels);
+            var vm = new MusicIndexViewModel
+            {
+                Songs = songModels,
+                PlayLists = userPlaylists,
+                BandNames = bandSelectList,
+                AlbumTitles = albumSelectList,
+            };
+
+            return View(vm);
+        }
+
+        private static void ToSelectList(List<Band> bands, List<Album> albums, out List<SelectListItem> bandSelectList, out List<SelectListItem> albumSelectList)
+        {
+            bandSelectList = bands.Select(band => new SelectListItem
+            {
+                Value = band.Id.ToString(),
+                Text = band.Name
+            }).ToList();
+            bandSelectList.Insert(0, new SelectListItem { Value = "0", Text = "None" });
+
+            albumSelectList = albums.Select(album => new SelectListItem
+            {
+                Value = album.Id.ToString(),
+                Text = album.Title
+            }).ToList();
+            albumSelectList.Insert(0, new SelectListItem { Value = "0", Text = "None" });
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(SongFilterViewModel vm)
+        {
+            var selectedBand = vm.BandNames
+                .Where(x => x.Value == vm.SelectedBand.ToString())
+                .First().Text;
+
+            var selectedAlbum = vm.AlbumTitles
+                .Where(x => x.Value == vm.SelectedAlbum.ToString())
+                .First().Text;
+
+            if (vm.SelectedAlbum == 0 && vm.SelectedBand == 0)
+            {
+                return RedirectToAction("Index");
+            }
+
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var bands = await _applicationDbContext.Bands.ToListAsync();
+            var albums = await _applicationDbContext.Albums.ToListAsync();
+            List<SelectListItem> bandSelectList, albumSelectList;
+            ToSelectList(bands, albums, out bandSelectList, out albumSelectList);
+
+            var songs = await _applicationDbContext.Songs
+                .Include(song => song.Album)
+                .ThenInclude(album => album.Band)
+                .ToListAsync();
+
+            IEnumerable<Song> albumsFiltered = vm.SelectedAlbum != 0 
+                ? songs.Where(song => song.Album.Title == selectedAlbum)
+                : songs;
+
+            IEnumerable<Song> allFiltered = vm.SelectedBand != 0
+                ? songs.Where(song => song.Album.Band.Name == selectedBand)
+                : songs;
+
+            throw new NotImplementedException();
         }
 
         public IActionResult Create()
