@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MediaCollection.Models.SongViewModels;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,14 +9,12 @@ namespace MediaCollection.Models
 {
     public class MusicIndexViewModel
     {
-        public int Id { get; set; }
-        public int? AlbumId { get; set; }
-        public string SongTitle { get; set; }
-        public string BandName { get; set; }
-        public string AlbumTitle { get; set; }
-        public TimeSpan Duration { get; set; }
-        public DateTime? ReleaseDate { get; set; }
+        public IEnumerable<SongIndexViewModel> Songs { get; set; }
         public IEnumerable<PlayListIndividualViewModel> PlayLists { get; set; }
-        public bool Hidden { get; internal set; }
+
+        public int SelectedBand { get; set; }
+        public int SelectedAlbum { get; set; }
+        public IEnumerable<SelectListItem> BandNames { get; set; }
+        public IEnumerable<SelectListItem> AlbumTitles { get; set; }
     }
 }
