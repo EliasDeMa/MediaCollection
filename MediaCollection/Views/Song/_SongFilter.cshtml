@@ -1,0 +1,21 @@
+﻿@model MediaCollection.Models.SongViewModels.SongFilterViewModel
+
+<div>
+    <form asp-controller="Song" asp-action="Index" method="post">
+        <div class="form-row">
+            <div class="col-6">
+                <label asp-for="SelectedBand"></label>
+                @Html.DropDownListFor(model => model.SelectedBand, new SelectList(Model.BandNames, "Value", "Text"))
+                <span class="text-danger" asp-validation-for="SelectedBand"></span>
+            </div>
+            <div class="col-3">
+                <label asp-for="SelectedAlbum"></label>
+                <select asp-for="SelectedAlbum" asp-items="@Model.AlbumTitles"></select>
+                <span class="text-danger" asp-validation-for="SelectedAlbum"></span>
+            </div>
+            <div class="col">
+                <button class="btn btn-secondary" type="submit">Filter</button>
+            </div>
+        </div>
+    </form>
+</div>
