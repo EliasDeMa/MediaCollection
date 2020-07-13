@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using MediaCollection.Data;
 using MediaCollection.Domain;
@@ -212,67 +213,29 @@ namespace MediaCollection.Controllers
                 bandExists = _applicationDbContext.Bands.Where(band => band.NormalizedName == vm.BandName.ToUpper());
             }
 
+            DotNetEnv.Env.Load();
+
             var songToDb = new Song
             {
                 Title = vm.SongTitle,
                 NormalizedTitle = vm.SongTitle.ToUpper(),
                 Duration = vm.Duration,
-                SongLink = vm.Link.Replace("https://www.youtube.com/watch?v=", "")
+                SongLink = vm.Link.Replace(DotNetEnv.Env.GetString("YOUTUBE_LINK"), "")
             };
 
-            await ChangeAlbum(vm.AlbumTitle, albumExists, songToDb);
+            await _songService.ChangeAlbum(vm.AlbumTitle, songToDb);
 
             if (songToDb.Album != null && songToDb.Album.ReleaseDate == null && vm.ReleaseDate.HasValue)
             {
                 songToDb.Album.ReleaseDate = vm.ReleaseDate.Value;
             }
 
-            await ChangeBand(vm.BandName, bandExists, songToDb);
+            await _songService.ChangeBand(vm.BandName, songToDb);
 
             await _applicationDbContext.Songs.AddAsync(songToDb);
             await _applicationDbContext.SaveChangesAsync();
 
             return RedirectToAction("Index");
-        }
-
-        private static async Task ChangeBand(string bandName, IQueryable<Band> bandExists, Song songToDb)
-        {
-            if (bandExists == null)
-            {
-                return;
-            }
-            else if (bandExists.Any() && songToDb.Album.BandId == null)
-            {
-                songToDb.Album.Band = await bandExists.FirstOrDefaultAsync();
-            }
-            else if (!bandExists.Any())
-            {
-                songToDb.Album.Band = new Band
-                {
-                    Name = bandName,
-                    NormalizedName = bandName.ToUpper()
-                };
-            }
-        }
-
-        private static async Task ChangeAlbum(string albumTitle, IQueryable<Album> albumExists, Song songToDb)
-        {
-            if (albumExists == null)
-            {
-                return;
-            }
-            else if (albumExists.Any())
-            {
-                songToDb.Album = await albumExists.FirstOrDefaultAsync();
-            }
-            else
-            {
-                songToDb.Album = new Album
-                {
-                    Title = albumTitle,
-                    NormalizedTitle = albumTitle.ToUpper()
-                };
-            }
         }
 
         public async Task<IActionResult> Detail(int id, bool alreadyReviewed = false)
@@ -343,13 +306,19 @@ namespace MediaCollection.Controllers
                 .ThenInclude(album => album.Band)
                 .FirstOrDefaultAsync(item => item.Id == id);
 
+            DotNetEnv.Env.Load();
+
             return View(new SongEditViewModel
             {
                 SongTitle = song.Title,
                 AlbumTitle = song.Album?.Title,
                 BandName = song.Album?.Band?.Name,
                 Duration = song.Duration,
-                ReleaseDate = song.Album?.ReleaseDate
+                ReleaseDate = song.Album?.ReleaseDate,
+                Link = !string.IsNullOrEmpty(song.SongLink) 
+                    ? new StringBuilder(DotNetEnv.Env.GetString("YOUTUBE_LINK"))
+                        .Append(song.SongLink).ToString() 
+                    : ""
             });
         }
 
@@ -357,15 +326,14 @@ namespace MediaCollection.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(int id, SongEditViewModel vm)
         {
-            var bandExists = _applicationDbContext.Bands.Where(band => band.NormalizedName == vm.BandName.ToUpper());
-            var albumExists = _applicationDbContext.Albums.Where(album => album.NormalizedTitle == vm.AlbumTitle.ToUpper());
             var origSong = await _applicationDbContext.Songs
                 .Include(song => song.Album)
                 .ThenInclude(album => album.Band)
                 .FirstOrDefaultAsync(item => item.Id == id);
 
             origSong.Duration = vm.Duration;
-            origSong.SongLink = vm.Link.Replace("https://www.youtube.com/watch?v=", "");
+            DotNetEnv.Env.Load();
+            origSong.SongLink = vm.Link.Replace(DotNetEnv.Env.GetString("YOUTUBE_LINK"), "");
 
             if (origSong.NormalizedTitle != vm.SongTitle.ToUpper())
             {
@@ -375,7 +343,7 @@ namespace MediaCollection.Controllers
 
             if (origSong.Album?.NormalizedTitle != vm.AlbumTitle)
             {
-                await ChangeAlbum(vm.AlbumTitle, albumExists, origSong);
+                await _songService.ChangeAlbum(vm.AlbumTitle, origSong);
                 origSong.Album.ReleaseDate = vm.ReleaseDate;
             }
 
@@ -386,7 +354,7 @@ namespace MediaCollection.Controllers
 
             if (origSong.Album?.Band?.NormalizedName != vm.BandName)
             {
-                await ChangeBand(vm.BandName, bandExists, origSong);
+                await _songService.ChangeBand(vm.BandName, origSong);
             }
 
             await _applicationDbContext.SaveChangesAsync();
