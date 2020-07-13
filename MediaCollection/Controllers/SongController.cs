@@ -36,6 +36,7 @@ namespace MediaCollection.Controllers
 
             var bands = await _applicationDbContext.Bands.ToListAsync();
             var albums = await _applicationDbContext.Albums.ToListAsync();
+
             List<SelectListItem> bandSelectList, albumSelectList;
             ToSelectList(bands, albums, out bandSelectList, out albumSelectList);
 
@@ -111,13 +112,11 @@ namespace MediaCollection.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(SongFilterViewModel vm)
         {
-            var selectedBand = vm.BandNames
-                .Where(x => x.Value == vm.SelectedBand.ToString())
-                .First().Text;
+            var selectedBand = (await _applicationDbContext.Bands
+                .FirstOrDefaultAsync(band => band.Id == vm.SelectedBand))?.Name ?? "";
 
-            var selectedAlbum = vm.AlbumTitles
-                .Where(x => x.Value == vm.SelectedAlbum.ToString())
-                .First().Text;
+            var selectedAlbum = (await _applicationDbContext.Albums
+                .FirstOrDefaultAsync(album => album.Id == vm.SelectedAlbum))?.Title ?? "";
 
             if (vm.SelectedAlbum == 0 && vm.SelectedBand == 0)
             {
@@ -141,10 +140,57 @@ namespace MediaCollection.Controllers
                 : songs;
 
             IEnumerable<Song> allFiltered = vm.SelectedBand != 0
-                ? songs.Where(song => song.Album.Band.Name == selectedBand)
-                : songs;
+                ? albumsFiltered.Where(song => song.Album.Band.Name == selectedBand)
+                : albumsFiltered;
 
-            throw new NotImplementedException();
+            var userPlaylists = await GetUserPlayLists(userId);
+
+            var songModels = new List<SongIndexViewModel>();
+
+            foreach (var song in allFiltered)
+            {
+                if (song.Hidden)
+                {
+                    songModels.Add(new SongIndexViewModel
+                    {
+                        Hidden = true,
+                        Id = song.Id,
+                    });
+                }
+                else
+                {
+                    var model = new SongIndexViewModel
+                    {
+                        Id = song.Id,
+                        Hidden = false,
+                        SongTitle = song.Title,
+                        Duration = song.Duration,
+                    };
+
+                    if (song.Album != null)
+                    {
+                        model.AlbumId = song.AlbumId;
+                        model.AlbumTitle = song.Album.Title;
+                        model.ReleaseDate = song.Album.ReleaseDate;
+                        if (song.Album.Band != null)
+                        {
+                            model.BandName = song.Album.Band.Name;
+                        }
+                    }
+
+                    songModels.Add(model);
+                }
+            }
+
+            var newVm = new MusicIndexViewModel
+            {
+                Songs = songModels,
+                PlayLists = userPlaylists,
+                BandNames = bandSelectList,
+                AlbumTitles = albumSelectList,
+            };
+
+            return View(newVm);
         }
 
         public IActionResult Create()
