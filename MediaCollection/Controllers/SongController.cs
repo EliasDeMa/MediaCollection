@@ -200,19 +200,6 @@ namespace MediaCollection.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(SongCreateViewModel vm)
         {
-            IQueryable<Band> bandExists = null;
-            IQueryable<Album> albumExists = null;
-
-            if (!string.IsNullOrEmpty(vm.AlbumTitle))
-            {
-                albumExists = _applicationDbContext.Albums.Where(album => album.NormalizedTitle == vm.AlbumTitle.ToUpper());
-            }
-
-            if (!string.IsNullOrEmpty(vm.BandName))
-            {
-                bandExists = _applicationDbContext.Bands.Where(band => band.NormalizedName == vm.BandName.ToUpper());
-            }
-
             DotNetEnv.Env.Load();
 
             var songToDb = new Song
@@ -231,7 +218,6 @@ namespace MediaCollection.Controllers
             }
 
             await _songService.ChangeBand(vm.BandName, songToDb);
-
             await _applicationDbContext.Songs.AddAsync(songToDb);
             await _applicationDbContext.SaveChangesAsync();
 
