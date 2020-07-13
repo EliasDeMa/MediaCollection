@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MediaCollection.Domain;
+using MediaCollection.Services;
 
 namespace MediaCollection
 {
@@ -35,6 +36,8 @@ namespace MediaCollection
             services.AddDefaultIdentity<MediaCollectionUser>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddTransient<ISongService, SongService>();
 
             services.AddCors(options =>
             {

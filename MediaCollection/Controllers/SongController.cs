@@ -7,6 +7,7 @@ using MediaCollection.Data;
 using MediaCollection.Domain;
 using MediaCollection.Models;
 using MediaCollection.Models.SongViewModels;
+using MediaCollection.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
@@ -19,20 +20,19 @@ namespace MediaCollection.Controllers
     public class SongController : Controller
     {
         private readonly ApplicationDbContext _applicationDbContext;
+        private readonly ISongService _songService;
 
-        public SongController(ApplicationDbContext applicationDbContext)
+        public SongController(ApplicationDbContext applicationDbContext, ISongService songService)
         {
             _applicationDbContext = applicationDbContext;
+            _songService = songService;
         }
 
         public async Task<IActionResult> Index()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var songs = await _applicationDbContext.Songs
-                .Include(song => song.Album)
-                .ThenInclude(album => album.Band)
-                .ToListAsync();
+            var songs = await _songService.GetSongs();
 
             var bands = await _applicationDbContext.Bands.ToListAsync();
             var albums = await _applicationDbContext.Albums.ToListAsync();
@@ -130,10 +130,7 @@ namespace MediaCollection.Controllers
             List<SelectListItem> bandSelectList, albumSelectList;
             ToSelectList(bands, albums, out bandSelectList, out albumSelectList);
 
-            var songs = await _applicationDbContext.Songs
-                .Include(song => song.Album)
-                .ThenInclude(album => album.Band)
-                .ToListAsync();
+            var songs = await _songService.GetSongs();
 
             IEnumerable<Song> albumsFiltered = vm.SelectedAlbum != 0 
                 ? songs.Where(song => song.Album.Title == selectedAlbum)
@@ -280,12 +277,7 @@ namespace MediaCollection.Controllers
 
         public async Task<IActionResult> Detail(int id, bool alreadyReviewed = false)
         {
-            var song = await _applicationDbContext.Songs
-                .Include(song => song.SongReviews)
-                .ThenInclude(review => review.User)
-                .Include(song => song.Album)
-                .ThenInclude(album => album.Band)
-                .FirstOrDefaultAsync(item => item.Id == id);
+            var song = await _songService.FindSongByIdDetailed(id);
 
             var approvedReviews = new List<SongReviewViewModel>();
 
