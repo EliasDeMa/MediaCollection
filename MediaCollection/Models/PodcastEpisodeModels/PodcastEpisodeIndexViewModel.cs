@@ -9,6 +9,7 @@ namespace MediaCollection.Models.PodcastEpisodeModels
     {
         public int Id { get; set; }
         public string EpisodeName { get; set; }
+        public string Podcast { get; set; }
         public string Link { get; set; }
     }
 }
