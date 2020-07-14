@@ -341,3 +341,4 @@ healthchecksdb
 
 MediaCollection/Data/Migrations
 /MediaCollection/.env
+/MediaCollection/wwwroot/imgs
