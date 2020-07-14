@@ -10,7 +10,7 @@ namespace MediaCollection.Services
 {
     public class SongService : ISongService
     {
-        private ApplicationDbContext _applicationDbContext;
+        private readonly ApplicationDbContext _applicationDbContext;
 
         public SongService(ApplicationDbContext applicationDbContext)
         {
