@@ -20,5 +20,6 @@ namespace MediaCollection.Domain
 
         public string UserId { get; set; }
         public MediaCollectionUser User { get; set; }
+        public DateTime PostDate { get; set; }
     }
 }
