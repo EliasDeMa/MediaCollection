@@ -17,5 +17,7 @@ namespace MediaCollection.Domain
         public DateTime? ReleaseDate { get; set; }
         public ICollection<Song> Songs { get; set; }
         public ICollection<AlbumReview> AlbumReviews { get; set; }
+        public string PhotoUrl { get; set; }
+
     }
 }
