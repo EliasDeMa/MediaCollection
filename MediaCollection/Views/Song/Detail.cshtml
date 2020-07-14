@@ -1,5 +1,11 @@
 ﻿@model MusicDetailViewModel
 @inject SignInManager<MediaCollection.Domain.MediaCollectionUser> signInManager
+
+@if (!String.IsNullOrEmpty(Model.PhotoUrl))
+{
+    <p><img src="@Model.PhotoUrl" width="150" /></p>
+}
+
 <strong>Title</strong>
 <p><em>@Model.SongTitle</em></p>
 
