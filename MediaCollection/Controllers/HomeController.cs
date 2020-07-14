@@ -12,6 +12,8 @@ using MediaCollection.Models.HomeViewModels;
 using MediaCollection.Models.SongViewModels;
 using MediaCollection.Domain;
 using Z.EntityFramework.Plus;
+using MediaCollection.Models.PodcastModels;
+using MediaCollection.Models.PodcastEpisodeModels;
 
 namespace MediaCollection.Controllers
 {
@@ -33,6 +35,13 @@ namespace MediaCollection.Controllers
                 .ThenInclude(song => song.Band)
                 .IncludeFilter(song => song.SongReviews.Where(review => review.PostDate > DateTime.Now.AddDays(-10)))
                 .OrderByDescending(song => song.SongReviews.Count)
+                .Take(10)
+                .ToListAsync();
+
+            var topTenPodcastEpisodes = await _applicationDbContext.PodcastEpisodes
+                .Include(pe => pe.Podcast)
+                .IncludeFilter(pe => pe.PodcastEpisodeReviews.Where(review => review.PostDate > DateTime.Now.AddDays(-10)))
+                .OrderByDescending(song => song.PodcastEpisodeReviews.Count)
                 .Take(10)
                 .ToListAsync();
 
@@ -74,7 +83,13 @@ namespace MediaCollection.Controllers
 
             var vm = new HomeIndexViewModel
             {
-                TopTenSongs = songModels
+                TopTenSongs = songModels,
+                TopTenPodcasts = topTenPodcastEpisodes.Select(pe => new PodcastEpisodeIndexViewModel
+                {
+                    Id = pe.Id,
+                    EpisodeName = pe.EpisodeTitle,
+                    Podcast = pe.Podcast.Name
+                })
             };
 
             return View(vm);
