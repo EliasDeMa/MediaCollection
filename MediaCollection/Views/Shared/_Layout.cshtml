@@ -12,11 +12,11 @@
         <div class="sidebar">
             <div class="top-row pl-4 navbar navbar-dark">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MediaCollection</a>
-                <button class="navbar-toggler">
+                <button class="navbar-toggler" id="navbar-toggler">
                     <span class="navbar-toggler-icon"></span>
                 </button>
             </div>
-            <div style="height:100%">
+            <div style="height:100%" id="toggleable">
                 <ul class="nav flex-column">
                     <li class="nav-item px-3">
                         <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
@@ -56,6 +56,13 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        const toggleButton = document.getElementById('navbar-toggler');
+        const toggleable = document.getElementById('toggleable');
+        toggleButton.addEventListener('click', () => {
+            toggleable.classList.toggle('collapse');
+        })
+    </script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>
