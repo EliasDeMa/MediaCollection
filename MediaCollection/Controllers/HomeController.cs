@@ -10,6 +10,8 @@ using MediaCollection.Data;
 using Microsoft.EntityFrameworkCore;
 using MediaCollection.Models.HomeViewModels;
 using MediaCollection.Models.SongViewModels;
+using MediaCollection.Domain;
+using Z.EntityFramework.Plus;
 
 namespace MediaCollection.Controllers
 {
@@ -27,9 +29,9 @@ namespace MediaCollection.Controllers
         public async Task<IActionResult> Index()
         {
             var topTenSongs = await _applicationDbContext.Songs
-                .Include(song => song.SongReviews)
                 .Include(song => song.Album)
                 .ThenInclude(song => song.Band)
+                .IncludeFilter(song => song.SongReviews.Where(review => review.PostDate > DateTime.Now.AddDays(-10)))
                 .OrderByDescending(song => song.SongReviews.Count)
                 .Take(10)
                 .ToListAsync();
@@ -72,7 +74,7 @@ namespace MediaCollection.Controllers
 
             var vm = new HomeIndexViewModel
             {
-                topTenSongs = songModels
+                TopTenSongs = songModels
             };
 
             return View(vm);
