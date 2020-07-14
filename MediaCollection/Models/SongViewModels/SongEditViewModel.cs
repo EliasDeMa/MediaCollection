@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -17,5 +18,7 @@ namespace MediaCollection.Models
         [Required(AllowEmptyStrings = false, ErrorMessage = "Duration cannot be zero")]
         public TimeSpan Duration { get; set; }
         public string Link { get; set; }
+        public IFormFile PhotoUrl { get; set; }
+
     }
 }
