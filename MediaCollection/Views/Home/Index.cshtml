@@ -1,7 +1,7 @@
 ﻿@model MediaCollection.Models.HomeViewModels.HomeIndexViewModel
 
 <strong>Trending Songs</strong>
-@if (Model.topTenSongs == null || !Model.topTenSongs.Any())
+@if (Model.TopTenSongs == null || !Model.TopTenSongs.Any())
 {
     <p><em>No music available.</em></p>
 }
@@ -16,7 +16,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.topTenSongs)
+            @foreach (var item in Model.TopTenSongs)
             {
                 <tr>
                     @if (!item.Hidden)
@@ -43,7 +43,7 @@ else
                     }
                     else
                     {
-                        <td colspan="6">This item is hidden.</td>
+                        <td colspan="3">This item is hidden.</td>
                     }
 
                     <td>
