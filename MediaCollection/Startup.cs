@@ -38,6 +38,7 @@ namespace MediaCollection
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddTransient<ISongService, SongService>();
+            services.AddTransient<IPhotoService, PhotoService>();
 
             services.AddCors(options =>
             {
