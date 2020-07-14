@@ -22,11 +22,13 @@ namespace MediaCollection.Controllers
     {
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly ISongService _songService;
+        private readonly IPhotoService _photoService;
 
-        public SongController(ApplicationDbContext applicationDbContext, ISongService songService)
+        public SongController(ApplicationDbContext applicationDbContext, ISongService songService, IPhotoService photoService)
         {
             _applicationDbContext = applicationDbContext;
             _songService = songService;
+            _photoService = photoService;
         }
 
         public async Task<IActionResult> Index()
