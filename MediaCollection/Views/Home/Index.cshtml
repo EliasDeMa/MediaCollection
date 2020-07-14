@@ -1,62 +1,92 @@
 ﻿@model MediaCollection.Models.HomeViewModels.HomeIndexViewModel
 
-<strong>Trending Songs</strong>
-@if (Model.TopTenSongs == null || !Model.TopTenSongs.Any())
-{
-    <p><em>No music available.</em></p>
-}
-else
-{
-    <table cellpadding="5">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Album</th>
-                <th>Band</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.TopTenSongs)
-            {
-                <tr>
-                    @if (!item.Hidden)
+<div class="container">
+    <div class="col-6">
+        <strong>Trending Songs</strong>
+        @if (Model.TopTenSongs == null || !Model.TopTenSongs.Any())
+        {
+            <p><em>No music available.</em></p>
+        }
+        else
+        {
+            <table cellpadding="5">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Album</th>
+                        <th>Band</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.TopTenSongs)
                     {
-
-                        <td>
-                            <a asp-controller="Song"
-                               asp-action="Detail"
-                               asp-route-id="@item.Id">@item.SongTitle</a>
-                        </td>
-                        <td>
-                            @if (item.AlbumId.HasValue)
+                        <tr>
+                            @if (!item.Hidden)
                             {
-                                <a asp-controller="Album"
-                                   asp-action="Detail"
-                                   asp-route-id="@item.AlbumId">@item.AlbumTitle</a>
+
+                                <td>
+                                    <a asp-controller="Song"
+                                       asp-action="Detail"
+                                       asp-route-id="@item.Id">@item.SongTitle</a>
+                                </td>
+                                <td>
+                                    @if (item.AlbumId.HasValue)
+                                    {
+                                        <a asp-controller="Album"
+                                           asp-action="Detail"
+                                           asp-route-id="@item.AlbumId">@item.AlbumTitle</a>
+                                    }
+                                    else
+                                    {
+                                        Html.Raw("No album available");
+                                    }
+                                </td>
+                                <td>@item.BandName</td>
                             }
                             else
                             {
-                                Html.Raw("No album available");
+                                <td colspan="3">This item is hidden.</td>
                             }
-                        </td>
-                        <td>@item.BandName</td>
-                    }
-                    else
-                    {
-                        <td colspan="3">This item is hidden.</td>
-                    }
 
-                    <td>
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <a asp-controller="Song"
-                               asp-action="ToggleHide"
-                               asp-route-id="@item.Id"
-                               class="btn btn-secondary">Hide</a>
-                        }
-                    </td>
+                            <td>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a asp-controller="Song"
+                                       asp-action="ToggleHide"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-secondary">Hide</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+    <div class="col-6">
+        <strong>Trending Podcast Episodes</strong>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
+            </thead>
+            <tbody>
+                @foreach (var item in Model.TopTenPodcasts)
+                {
+                    <tr>
+                        <td>
+                            <a asp-controller="PodcastEpisode"
+                               asp-action="Detail"
+                               asp-route-id="@item.Id">@item.EpisodeName</a>
+                        </td>
+                        <td>
+                            <a>@item.Podcast</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
