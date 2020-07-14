@@ -202,6 +202,11 @@ namespace MediaCollection.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(SongCreateViewModel vm)
         {
+            if (!TryValidateModel(vm))
+            {
+                return View(vm);
+            }
+
             DotNetEnv.Env.Load();
 
             var songToDb = new Song
@@ -217,6 +222,11 @@ namespace MediaCollection.Controllers
             if (songToDb.Album != null && songToDb.Album.ReleaseDate == null && vm.ReleaseDate.HasValue)
             {
                 songToDb.Album.ReleaseDate = vm.ReleaseDate.Value;
+            }
+
+            if (vm.PhotoUrl != null && songToDb.Album != null)
+            {
+                songToDb.Album.PhotoUrl = _photoService.AddPhoto(vm.PhotoUrl);
             }
 
             await _songService.ChangeBand(vm.BandName, songToDb);
@@ -241,7 +251,8 @@ namespace MediaCollection.Controllers
                 BandName = song.Album?.Band?.Name,
                 Duration = song.Duration,
                 ReleaseDate = song.Album?.ReleaseDate,
-                Link = song.SongLink
+                Link = song.SongLink,
+                PhotoUrl = song.Album?.PhotoUrl
             };
 
             foreach (var item in song.SongReviews)
@@ -343,6 +354,14 @@ namespace MediaCollection.Controllers
             if (origSong.Album?.Band?.NormalizedName != vm.BandName)
             {
                 await _songService.ChangeBand(vm.BandName, origSong);
+            }
+
+            if (vm.PhotoUrl != null && origSong.Album != null)
+            {
+                if (!String.IsNullOrEmpty(origSong.Album.PhotoUrl))
+                    _photoService.DeletePhoto(origSong.Album.PhotoUrl);
+
+                origSong.Album.PhotoUrl = _photoService.AddPhoto(vm.PhotoUrl);
             }
 
             await _applicationDbContext.SaveChangesAsync();
