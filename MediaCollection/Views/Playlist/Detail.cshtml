@@ -1,7 +1,8 @@
 ﻿@model PlaylistDetailViewModel
 @inject SignInManager<MediaCollection.Domain.MediaCollectionUser> signInManager
 
-<button id="play-button">Play</button>
+<button id="play-button"
+        class="btn btn-primary">Play All</button>
 <h2>@Model.Name</h2>
 
 @if (Model.Songs == null || !Model.Songs.Any())
@@ -17,24 +18,29 @@ else
                 <th>Album</th>
                 <th>Band</th>
                 <th>Release Date</th>
-                <th colspan="2">Duration</th>
+                <th colspan="3">Duration</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.Songs)
             {
-                <tr>
-                    <td>
-                        <a asp-controller="Song"
-                           asp-action="Detail"
-                           asp-route-id="@item.Id">@item.SongTitle</a>
-                    </td>
-                    <td>@item.AlbumTitle</td>
-                    <td>@item.BandName</td>
-                    <td>@(item.ReleaseDate?.ToShortDateString() ?? "No release date added")</td>
-                    <td>@item.Duration</td>
-                    <td><button class="play-button-individual" id="@item.Url">Play</button></td>
-                </tr>
+            <tr>
+                <td>
+                    <a asp-controller="Song"
+                       asp-action="Detail"
+                       asp-route-id="@item.Id">@item.SongTitle</a>
+                </td>
+                <td>@item.AlbumTitle</td>
+                <td>@item.BandName</td>
+                <td>@(item.ReleaseDate?.ToShortDateString() ?? "No release date added")</td>
+                <td>@item.Duration</td>
+                <td><button class="play-button-individual btn btn-secondary" id="@item.Url">Play</button></td>
+                <td><a asp-controller="Playlist"
+                       asp-action="RemoveSong"
+                       asp-route-songId="@item.Id"
+                       asp-route-playlistId="@Model.Id"
+                       class="play-button-individual" id="@item.Url">Remove</a></td>
+            </tr>
             }
         </tbody>
     </table>

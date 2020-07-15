@@ -61,11 +61,13 @@ namespace MediaCollection.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize]
         public async Task<IActionResult> AddSong(int songId, int playlistId)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var playlist = await _applicationDbContext.PlayLists
+                .Include(pl => pl.PlayListSongs)
                 .FirstOrDefaultAsync(pl => pl.Id == playlistId && pl.UserId == userId);
 
             if (playlist.PlayListSongs == null)
@@ -73,11 +75,25 @@ namespace MediaCollection.Controllers
                 playlist.PlayListSongs = new List<PlayListSong>();
             }
 
+            if (playlist.PlayListSongs.Any(pls => pls.SongId == songId))
+                return RedirectToAction("Index", "Song", new { alreadyAdded = true });
+
             playlist.PlayListSongs.Add(new PlayListSong
             {
                 SongId = songId
             });
 
+            await _applicationDbContext.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Song");
+        }
+
+        [Authorize]
+        public async Task<IActionResult> RemoveSong(int songId, int playlistId)
+        {
+            var song = await _applicationDbContext.PlayListSongs.FirstOrDefaultAsync(song => song.SongId == songId && song.PlayListId == playlistId);
+
+            _applicationDbContext.PlayListSongs.Remove(song);
             await _applicationDbContext.SaveChangesAsync();
 
             return RedirectToAction("Detail", new { Id = playlistId });
