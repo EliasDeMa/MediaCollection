@@ -10,9 +10,16 @@ namespace MediaCollection.Models
     public class SongEditViewModel
     {
         [Required(AllowEmptyStrings = false, ErrorMessage = "Songtitle cannot be empty")]
+        [Display(Name = "Song title")]
         public string SongTitle { get; set; }
+
+        [Display(Name = "Album title")]
         public string AlbumTitle { get; set; }
+
+        [Display(Name = "Band name")]
         public string BandName { get; set; }
+
+        [Display(Name = "Release date")]
         public DateTime? ReleaseDate { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Duration cannot be zero")]
