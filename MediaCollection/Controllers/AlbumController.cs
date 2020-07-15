@@ -38,7 +38,8 @@ namespace MediaCollection.Controllers
                 Id = album.Id,
                 Band = album.Band.Name,
                 Title = album.Title,
-                Songs = album.Songs.Select(song => (song.Title, song.Duration))
+                Songs = album.Songs.Select(song => (song.Title, song.Duration)),
+                PhotoUrl = album.PhotoUrl
             };
 
             var approvedReviews = new List<AlbumReviewViewModel>();

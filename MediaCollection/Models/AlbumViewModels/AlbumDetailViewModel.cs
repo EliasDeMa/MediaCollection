@@ -15,5 +15,6 @@ namespace MediaCollection.Models
         public ReviewFormViewModel ReviewForm { get; set; }
         public bool AlreadyReviewed { get; set; }
         public IEnumerable<AlbumReviewViewModel> Reviews { get; set; }
+        public string PhotoUrl { get; set; }
     }
 }
