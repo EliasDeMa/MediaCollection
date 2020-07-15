@@ -23,7 +23,6 @@
                         <tr>
                             @if (!item.Hidden)
                             {
-
                                 <td>
                                     <a asp-controller="Song"
                                        asp-action="Detail"
@@ -43,20 +42,6 @@
                                 </td>
                                 <td>@item.BandName</td>
                             }
-                            else
-                            {
-                                <td colspan="3">This item is hidden.</td>
-                            }
-
-                            <td>
-                                @if (User.IsInRole("Admin"))
-                                {
-                                    <a asp-controller="Song"
-                                       asp-action="ToggleHide"
-                                       asp-route-id="@item.Id"
-                                       class="btn btn-secondary">Hide</a>
-                                }
-                            </td>
                         </tr>
                     }
                 </tbody>
