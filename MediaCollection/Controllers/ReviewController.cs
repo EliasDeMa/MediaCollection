@@ -144,7 +144,7 @@ namespace MediaCollection.Controllers
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var origReview = await _applicationDbContext.SongReviews
-                .FirstOrDefaultAsync(review => review.UserId == userId && review.Id == vm.Id);
+                .FirstOrDefaultAsync(review => review.UserId == userId && review.SongId == vm.Id);
 
             origReview.Score = vm.NewReviewScore;
             origReview.Description = vm.NewReview;
@@ -161,7 +161,7 @@ namespace MediaCollection.Controllers
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var origReview = await _applicationDbContext.AlbumReviews
-                .FirstOrDefaultAsync(review => review.UserId == userId && review.Id == vm.Id);
+                .FirstOrDefaultAsync(review => review.UserId == userId && review.AlbumId == vm.Id);
 
             origReview.Score = vm.NewReviewScore;
             origReview.Description = vm.NewReview;
@@ -178,7 +178,7 @@ namespace MediaCollection.Controllers
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var origReview = await _applicationDbContext.PodcastEpisodeReviews
-                .FirstOrDefaultAsync(review => review.UserId == userId && review.Id == vm.Id);
+                .FirstOrDefaultAsync(review => review.UserId == userId && review.PodcastEpisodeId == vm.Id);
 
             origReview.Score = vm.NewReviewScore;
             origReview.Description = vm.NewReview;
