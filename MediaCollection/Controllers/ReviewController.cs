@@ -66,7 +66,8 @@ namespace MediaCollection.Controllers
                     Score = vm.NewReviewScore,
                     SongId = vm.Id,
                     UserId = userId,
-                    Approved = false
+                    Approved = false,
+                    PostDate = DateTime.Now
                 };
 
                 _applicationDbContext.SongReviews.Add(songReview);
@@ -95,7 +96,8 @@ namespace MediaCollection.Controllers
                     Description = vm.NewReview,
                     Score = vm.NewReviewScore,
                     AlbumId = vm.Id,
-                    UserId = userId
+                    UserId = userId,
+                    PostDate = DateTime.Now
                 };
 
                 _applicationDbContext.AlbumReviews.Add(albumReview);
@@ -124,7 +126,8 @@ namespace MediaCollection.Controllers
                     Description = vm.NewReview,
                     Score = vm.NewReviewScore,
                     PodcastEpisodeId = vm.Id,
-                    UserId = userId
+                    UserId = userId,
+                    PostDate = DateTime.Now
                 };
 
                 _applicationDbContext.PodcastEpisodeReviews.Add(podcastEpisodeReview);
