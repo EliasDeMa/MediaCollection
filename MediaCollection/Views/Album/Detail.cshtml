@@ -1,6 +1,11 @@
 ﻿@model AlbumDetailViewModel
 @inject SignInManager<MediaCollection.Domain.MediaCollectionUser> signInManager
 
+@if (!String.IsNullOrEmpty(Model.PhotoUrl))
+{
+    <p><img src="@Model.PhotoUrl" width="300" style="float:right" /></p>
+}
+
 <strong>Title</strong>
 <p>@Model.Title</p>
 
