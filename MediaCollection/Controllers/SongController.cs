@@ -31,7 +31,7 @@ namespace MediaCollection.Controllers
             _photoService = photoService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(bool alreadyAdded = false)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -88,6 +88,7 @@ namespace MediaCollection.Controllers
                 PlayLists = userPlaylists,
                 BandNames = bandSelectList,
                 AlbumTitles = albumSelectList,
+                AlreadyAdded = alreadyAdded
             };
 
             return View(vm);

@@ -1,12 +1,12 @@
 ﻿@model MusicIndexViewModel
 @inject SignInManager<MediaCollection.Domain.MediaCollectionUser> signInManager
 
-<partial name="_SongFilter.cshtml" model="@(new MediaCollection.Models.SongViewModels.SongFilterViewModel { 
+<partial name="_SongFilter.cshtml" model="@(new MediaCollection.Models.SongViewModels.SongFilterViewModel {
     SelectedAlbum = 0,
     SelectedBand = 0,
     AlbumTitles = Model.AlbumTitles,
     BandNames = Model.BandNames
-})"/>
+})" />
 
 <h2>Music</h2>
 @if (Model.Songs == null || !Model.Songs.Any())
@@ -99,6 +99,15 @@ else
             }
         </tbody>
     </table>
+}
+
+@if (Model.AlreadyAdded)
+{
+    <script>
+
+        alert("You already added this song to this playlist!");
+
+    </script>
 }
 
 <a asp-controller="Song"
