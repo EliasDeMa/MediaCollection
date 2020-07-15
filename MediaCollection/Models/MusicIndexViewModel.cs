@@ -16,5 +16,6 @@ namespace MediaCollection.Models
         public int SelectedAlbum { get; set; }
         public IEnumerable<SelectListItem> BandNames { get; set; }
         public IEnumerable<SelectListItem> AlbumTitles { get; set; }
+        public bool AlreadyAdded { get; set; }
     }
 }
